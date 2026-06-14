@@ -157,9 +157,41 @@ assign irq_sources = {1'b0, eep_irq, aes_irq, bb_irq};
 
 ---
 
-## 5. 时钟与复位规范
+## 5. EEPROM 外部接口 (I2C)
 
-### 5.1 时钟域
+EEPROM 控制器需引出 I2C 物理层信号：
+
+```verilog
+// EEPROM 控制器顶层额外端口
+output wire         i2c_scl,       // I2C 时钟 (开漏, 外部上拉)
+inout  wire         i2c_sda,       // I2C 数据 (开漏, 外部上拉)
+```
+
+### I2C 时序要求
+- 标准模式: 100 kHz
+- 快速模式: 400 kHz
+- 通过 `EEP_DIV` 寄存器配置分频系数
+
+---
+
+## 6. APB 写时序建议
+
+> ⚠️ 由于 AHB2APB Bridge 的 `psel`/`penable` 为寄存器输出，建议外设在 **negedge pclk** 采样写入，确保信号已稳定。
+
+```verilog
+// 推荐写法
+always @(negedge pclk or negedge presetn) begin
+    if (!presetn) ...
+    else if (psel && penable && pwrite && addr_ok)
+        regfile[addr] <= pwdata;
+end
+```
+
+---
+
+## 7. 时钟与复位规范
+
+### 7.1 时钟域
 
 | 时钟名 | 频率 | 驱动域 | 说明 |
 |--------|------|--------|------|
@@ -167,7 +199,7 @@ assign irq_sources = {1'b0, eep_irq, aes_irq, bb_irq};
 | `clk_bb` | 13.56 MHz / 可配 | 数字基带 | 基带专用时钟（可能与 clk_sys 同源） |
 | `rf_clk` | 13.56 MHz | AFE 接口 | 射频前端输入时钟 |
 
-### 5.2 复位策略
+### 7.2 复位策略
 
 ```
                          ┌─────────────────┐
@@ -181,7 +213,7 @@ rst_n (async) ──────────▶│  同步释放电路    │─
 - **同步器**：两级 DFF，消除亚稳态
 - **复位树**：从 `soc_top` → 各子模块的 `presetn`
 
-### 5.3 时钟门控策略
+### 7.3 时钟门控策略
 
 ```verilog
 // ICG (Integrated Clock Gating) 实例化示例
@@ -192,9 +224,9 @@ assign clk_aes_gated = clk_sys & aes_clk_en;
 
 ---
 
-## 6. 团队协作接口约定
+## 8. 团队协作接口约定
 
-### 6.1 模块交付标准
+### 8.1 模块交付标准
 
 1. ✅ 模块顶层端口**必须**完全匹配本文档第 2.1 节 APB 从机端口列表
 2. ✅ 寄存器地址偏移**必须**与 `memory_map.md` 第 3 节一致
@@ -202,7 +234,7 @@ assign clk_aes_gated = clk_sys & aes_clk_en;
 4. ✅ `pready` 至少支持 0~3 个等待周期的可配置延迟
 5. ✅ 模块内不能有 `pclk` 和 `clk_sys` 之外的独立时钟生成
 
-### 6.2 版本管理
+### 8.2 版本管理
 
 | 模块 | Git 分支 | RTL 文件名规范 |
 |------|----------|---------------|

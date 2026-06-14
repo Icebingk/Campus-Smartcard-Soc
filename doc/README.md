@@ -1,44 +1,45 @@
-# 校园智能卡 SoC 项目说明书
+# 校园智能卡 SoC — 项目说明书
 
 > **项目**: 基于 SoC 的校园智能卡主芯片设计  
-> **工程阶段**: Phase 1-2 (基础设施构建)  
+> **工艺**: 数字 ASIC 正向设计全流程 (RTL → GDSII)  
 > **最后更新**: 2026-06-14  
+> **当前阶段**: Phase 2 — 全芯片集成验证通过 ✅
 
 ---
 
 ## 1. 项目结构
 
 ```
-Soc/
-├── doc/                    # 文档
-│   ├── memory_map.md       # 全芯片地址映射（必读）
-│   ├── interface_spec.md   # 接口信号规范（必读）
-│   └── README.md           # 本文件
-├── rtl/                    # RTL 源代码
-│   ├── top/                # 顶层集成（待编写）
-│   ├── bus/                # 总线 (完成)
-│   │   ├── ahb_matrix.v
-│   │   ├── ahb2apb_bridge.v
+Campus-Smartcard-Soc/
+├── doc/                         # 文档
+│   ├── README.md                # 本文件
+│   ├── memory_map.md            # 全芯片地址映射（必读）
+│   └── interface_spec.md        # 模块接口信号规范（必读）
+├── rtl/                         # RTL 源代码
+│   ├── top/soc_top.v            # 顶层集成 ✅
+│   ├── bus/                     # AMBA 总线 ✅
+│   │   ├── ahb_matrix.v         #   AHB-Lite 1×3 总线矩阵
+│   │   ├── ahb2apb_bridge.v     #   AHB→APB 桥 (v2.0)
 │   │   └── apb_regfile_template.v
-│   ├── cpu/                # 处理器核 (外采)
-│   ├── mem/                # 存储器 (完成)
-│   │   ├── rom_model.v
-│   │   └── sram_model.v
-│   ├── baseband/           # 数字基带 (林子轩)
-│   ├── aes/                # AES 引擎 (梁芷晴)
-│   ├── eeprom/             # EEPROM 控制器
-│   └── pmu/                # 电源管理 (时钟门控)
-├── sim/                    # 仿真环境
-│   ├── tb/                 # Testbench
-│   │   ├── tb_ahb_bus.v    # AHB 总线测试
-│   │   ├── ahb_master_bfm.v
-│   │   └── tb_soc_top.v    # 全芯片测试 (待编写)
-│   └── scripts/            # 仿真脚本
-│       ├── sim_bus.do      # ModelSim 运行脚本
-│       └── sim_top.do
-├── syn/                    # 综合环境
+│   ├── cpu/rv32ec_core.v        # CPU 行为模型 (AHB Master) ✅
+│   ├── mem/                     # 存储器 ✅
+│   │   ├── rom_model.v          #   ROM 16KB (AHB Slave)
+│   │   └── sram_model.v         #   SRAM 8KB (AHB Slave)
+│   ├── baseband/bb_top.v        # 数字基带 APB 存根 ⚠️ 待林子轩
+│   ├── aes/aes_top.v            # AES-128 APB 存根 ⚠️ 待梁芷晴
+│   ├── eeprom/eep_top.v         # EEPROM 控制器存根 ⚠️
+│   └── pmu/pmu_top.v            # 电源管理 (时钟门控+复位同步) ✅
+├── sim/                         # 仿真环境
+│   ├── tb/
+│   │   ├── tb_ahb_bus.v         #   AHB 总线单元测试 ✅
+│   │   ├── tb_soc_top.v         #   全芯片测试 ✅
+│   │   └── ahb_master_bfm.v     #   AHB Master BFM
 │   └── scripts/
-│       └── synthesis.tcl   # Vivado TCL 脚本
+│       ├── sim_bus.do            #   ModelSim 总线仿真脚本
+│       └── sim_top.do            #   ModelSim 全芯片仿真脚本
+├── syn/scripts/                 # 综合环境
+│   ├── create_project.tcl
+│   └── synthesis.tcl
 └── .gitignore
 ```
 
@@ -46,111 +47,115 @@ Soc/
 
 ## 2. 快速开始
 
-### 2.1 仿真 AHB 总线 (ModelSim)
+### 2.1 环境要求
+
+| 工具 | 版本 | 用途 |
+|------|------|------|
+| ModelSim SE-64 | 2020.4+ | RTL 仿真 |
+| Vivado | 2020.2+ | 逻辑综合 |
+
+### 2.2 运行仿真
 
 ```bash
+# 总线级仿真 (AHB Matrix + Bridge + ROM + SRAM)
 cd sim/scripts
-vsim -do sim_bus.do
+vsim -c -do sim_bus.do
+
+# 全芯片仿真 (CPU + 总线 + 所有外设)  
+cd sim/scripts
+vsim -c -do sim_top.do
+
+# GUI 波形模式
+cd sim/scripts
+vsim -do sim_top.do
 ```
 
-**预期输出**:
-- ROM 读取: 0x00000001
-- SRAM 写入 + 读回: 0xDEAD_BEEF
-- APB Bridge 回路: 0x00000001
-- 地址越界: 0xDEAD_BEEF (ERROR)
+**全芯片仿真结果** (10/10 通过):
 
-### 2.2 综合全芯片 (Vivado)
-
-```bash
-cd syn/scripts
-vivado -mode batch -source synthesis.tcl
-```
-
-**输出**: `syn/outputs/` 目录下的网表和报告
+| # | 测试 | 结果 |
+|---|------|------|
+| 1 | ROM 读 @ 0x00000000 | `0x00000001` ✅ |
+| 2 | SRAM 写 @ 0x00010000 | `0xCAFEBABE` ✅ |
+| 3 | SRAM 读验证 | `0xCAFEBABE` ✅ |
+| 4 | 基带 CTRL 写 | `0x00000001` ✅ |
+| 5 | 基带 CTRL 读 | `0x00000001` ✅ |
+| 6 | AES KEY0 写 | `0x2B7E1516` ✅ |
+| 7 | AES KEY0 读 | `0x2B7E1516` ✅ |
+| 8 | EEPROM CTRL 写 | `0x00000003` ✅ |
+| 9 | EEPROM CTRL 读 | `0x00000003` ✅ |
+| 10 | 地址越界 | `0xDEAD_BEEF` ✅ |
 
 ---
 
-## 3. 文件状态
+## 3. 模块状态
 
 | 模块 | 文件 | 状态 | 负责人 |
 |------|------|------|--------|
-| AHB 总线 | `rtl/bus/ahb_matrix.v` | ✅ 完成 | 阿呆不呆 |
-| AHB2APB | `rtl/bus/ahb2apb_bridge.v` | ✅ 完成 | 阿呆不呆 |
-| APB 模板 | `rtl/bus/apb_regfile_template.v` | ✅ 完成 | 阿呆不呆 |
-| ROM | `rtl/mem/rom_model.v` | ✅ 完成 | 阿呆不呆 |
-| SRAM | `rtl/mem/sram_model.v` | ✅ 完成 | 阿呆不呆 |
-| 数字基带 | `rtl/baseband/` | ⏳ 开发中 | 林子轩 |
-| AES-128 | `rtl/aes/` | ⏳ 开发中 | 梁芷晴 |
-| 顶层 | `rtl/top/soc_top.v` | ⏳ 待编写 | 阿呆不呆 |
-| 全芯片测试 | `sim/tb/tb_soc_top.v` | ⏳ 待编写 | 阿呆不呆 |
+| AHB 总线矩阵 | `rtl/bus/ahb_matrix.v` | ✅ 完成 | 阿呆不呆 |
+| AHB2APB 桥 | `rtl/bus/ahb2apb_bridge.v` | ✅ v2.0 | 阿呆不呆 |
+| APB 寄存器模板 | `rtl/bus/apb_regfile_template.v` | ✅ 完成 | 阿呆不呆 |
+| ROM 16KB | `rtl/mem/rom_model.v` | ✅ 完成 | 阿呆不呆 |
+| SRAM 8KB | `rtl/mem/sram_model.v` | ✅ 完成 | 阿呆不呆 |
+| CPU (行为模型) | `rtl/cpu/rv32ec_core.v` | ✅ 存根 | 阿呆不呆 |
+| PMU | `rtl/pmu/pmu_top.v` | ✅ 完成 | 陆凤敏 |
+| SoC 顶层集成 | `rtl/top/soc_top.v` | ✅ 完成 | 阿呆不呆 |
+| 全芯片 Testbench | `sim/tb/tb_soc_top.v` | ✅ 完成 | 阿呆不呆 |
+| 数字基带 | `rtl/baseband/bb_top.v` | ⚠️ 存根 | 林子轩 |
+| AES-128 | `rtl/aes/aes_top.v` | ⚠️ 存根 | 梁芷晴 |
+| EEPROM 控制器 | `rtl/eeprom/eep_top.v` | ⚠️ 存根 | — |
 
 ---
 
-## 4. 接口对接指南（给团队成员）
+## 4. 团队分工
 
-### 4.1 数字基带 (林子轩) 开发检查清单
-
-- [ ] 模块顶层端口**必须**包含: `pclk, presetn, psel, penable, paddr, pwrite, pwdata, prdata, pready, pslverr, irq_o`
-- [ ] 地址偏移遵循 `doc/memory_map.md` 第 3.1 节
-  - `0x000`: BB_CTRL
-  - `0x004`: BB_STATUS
-  - `0x008` 之后: TX_DATA/RX_DATA/FIFO_LEVEL 等
-- [ ] 在 `apb_regfile_template.v` 基础上扩展，或参考其寄存器读写逻辑
-- [ ] 中断输出 `irq_o` 连接到顶层中断聚合电路
-
-### 4.2 AES-128 引擎 (梁芷晴) 开发检查清单
-
-- [ ] 同样遵循 APB 从机端口规范
-- [ ] 地址偏移: `doc/memory_map.md` 第 3.2 节
-  - 0x000 ~ 0x014: 控制 + 密钥 (4 x 32-bit)
-  - 0x018 ~ 0x024: 明文/密文输入 (4 x 32-bit)
-  - 0x028 ~ 0x034: 结果输出 (4 x 32-bit)
-- [ ] 使用迭代型架构，门数 < 4000
-- [ ] 中断输出连接到顶层
+| 成员 | 角色 | 核心任务 |
+|------|------|---------|
+| **阿呆不呆** | 集成负责人 | SoC 顶层、AMBA 总线、Memory Map、综合 |
+| **林子轩** | 数字基带 | ISO14443 防冲突 FSM、曼彻斯特编解码 |
+| **梁芷晴** | 加密引擎 | 迭代型 AES-128 协处理器 |
+| **陆凤敏** | 后端物理设计 | SDC、IR-Drop、电源网络 |
+| **何展韬** | 整体设计 | Spec、软硬件划分、微架构 |
 
 ---
 
-## 5. 关键时间节点
+## 5. 给模块开发者的接口规范
 
-| 日期 | 事项 | 所有者 |
-|------|------|--------|
-| **Day 3** | Memory Map v1.0 发布 | 阿呆不呆 ✅ |
-| **Day 5** | 接口规范 v1.0 + 团队对齐会 | 阿呆不呆 ✅ |
-| **Week 2 末** | 模块 RTL 交付底线 | 林子轩, 梁芷晴 |
-| **Week 3 中** | 全芯片集成完成 | 阿呆不呆 |
-| **Week 3 末** | 全芯片仿真通过 | 阿呆不呆 |
-| **Week 4 初** | 综合首轮 | 阿呆不呆 + 陆凤敏 |
-| **Week 4 末** | 最终交付 | 全员 |
+### 5.1 APB 从机必选端口
 
----
+```verilog
+module your_module (
+    input  wire         pclk,        // APB 时钟
+    input  wire         presetn,     // APB 复位
+    input  wire         psel,        // 从机选择
+    input  wire         penable,     // APB 使能
+    input  wire [11:0]  paddr,       // 地址 (12-bit)
+    input  wire         pwrite,      // 1=写, 0=读
+    input  wire [31:0]  pwdata,      // 写数据
+    output wire [31:0]  prdata,      // 读数据
+    output wire         pready,      // 就绪 (=1)
+    output wire         pslverr,     // 错误 (=0)
+    output wire         irq_o         // 中断
+);
+```
 
-## 6. 常见问题
+### 5.2 注意事项
 
-### Q: 如何修改 ROM 初始化内容?
-**A**: 编辑 `rtl/mem/rom_model.v` 中 `initial` 块，或使用 $readmemh() 从文件加载。
-
-### Q: 仿真报错 "NONSEQ transaction not completed"?
-**A**: 检查 Slave 的 `hready` 信号，应在每个传输完成后拉高。
-
-### Q: 如何添加新的 APB 从机?
-**A**: 
-1. 在 `memory_map.md` 中分配地址
-2. 在 `ahb_matrix.v` 中添加 `hsel_xxx` 译码规则
-3. 模块实现 APB Slave 接口
-
-### Q: 综合时报警 "Some constraints not met"?
-**A**: 检查 `syn/scripts/synthesis.tcl` 中的时钟周期设置，可能需要降频或优化 RTL。
+- **地址偏移**: 严格遵循 [`memory_map.md`](memory_map.md)
+- **写时序**: 建议 `negedge pclk` 采样 `psel && penable && pwrite`
+- **读时序**: 组合逻辑输出，`psel && !pwrite` 时返回 `regfile[addr]`
+- 详细规范见 [`interface_spec.md`](interface_spec.md)
 
 ---
 
-## 7. 参考资源
+## 6. 时间节点
 
-- **AMBA AHB-Lite Spec**: 用于总线设计参考
-- **APB Slave 接口规范**: 见 `doc/interface_spec.md`
-- **Memory Map**: 见 `doc/memory_map.md`
-
----
-
-> 📢 **最后更新**: 2026-06-14  
-> **维护人**: 阿呆不呆  
-> **如有疑问，请及时沟通！**
+| 日期 | 事项 | 状态 |
+|------|------|------|
+| Day 1 | 需求定义 & 技术选型 | ✅ |
+| Day 3 | Memory Map v1.0 发布 | ✅ |
+| Day 5 | 接口规范 & 团队对齐 | ✅ |
+| Day 7 | 总线 + Bridge RTL 完成 | ✅ |
+| Day 10 | 全芯片集成 & 仿真通过 | ✅ |
+| Week 2 末 | 模块 RTL 交付 | 待林子轩/梁芷晴 |
+| Week 3 | 综合首轮 | 待启动 |
+| Week 4 | 最终网表交付 | 待启动 |
