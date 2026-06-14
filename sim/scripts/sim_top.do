@@ -23,7 +23,8 @@ vlog +acc -work work $RTL_DIR/bus/ahb2apb_bridge.v
 vlog +acc -work work $RTL_DIR/bus/ahb_matrix.v
 
 # CPU
-vlog +acc -work work $RTL_DIR/cpu/rv32ec_core.v
+vlog +acc -work work $RTL_DIR/cpu/picorv32.v
+vlog +acc -work work $RTL_DIR/cpu/rv32ec_bfm.v
 
 # 外设模块
 vlog +acc -work work $RTL_DIR/baseband/bb_top.v

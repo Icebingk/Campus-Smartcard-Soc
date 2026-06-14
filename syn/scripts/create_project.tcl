@@ -39,7 +39,8 @@ add_files -norecurse $rtl_dir/bus/apb_regfile_template.v
 add_files -norecurse $rtl_dir/bus/ahb2apb_bridge.v
 add_files -norecurse $rtl_dir/bus/ahb_matrix.v
 
-# --- CPU Behavioral Model ---
+# --- CPU (Open-Source PicoRV32 RV32EC + AHB Wrapper) ---
+add_files -norecurse $rtl_dir/cpu/picorv32.v
 add_files -norecurse $rtl_dir/cpu/rv32ec_core.v
 
 # --- APB Peripherals ---
