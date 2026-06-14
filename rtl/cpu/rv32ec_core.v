@@ -136,77 +136,238 @@ module rv32ec_core (
         $display("[CPU] ===== RV32EC 行为模型启动 =====");
         $display("[CPU] 时间: %0t ns", $time);
 
-        // ─── 测试 1: 读 ROM (boot vector) ───
-        $display("\n[CPU] Test 1: 读 ROM @ 0x00000000");
+        // ─── ROM 测试 ───
+        $display("\n[CPU] ===== 1. ROM 测试 =====");
+        $display("[CPU] Test 1.1: 读 ROM[0] @ 0x00000000");
         read_word(32'h0000_0000, rdata);
-        $display("[CPU]   ROM[0] = 0x%08h", rdata);
         if (rdata !== 32'hx && rdata !== 32'hz) test_pass = test_pass + 1;
         else test_fail = test_fail + 1;
-        delay(5);
+        $display("[CPU]   ROM[0] = 0x%08h %s", rdata, (rdata !== 32'hx && rdata !== 32'hz) ? "PASS" : "FAIL");
 
-        // ─── 测试 2: 写 SRAM ───
-        $display("\n[CPU] Test 2: 写 SRAM @ 0x00010000");
+        $display("[CPU] Test 1.2: 读 ROM[1] @ 0x00000004");
+        read_word(32'h0000_0004, rdata);
+        if (rdata !== 32'hx && rdata !== 32'hz) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   ROM[1] = 0x%08h %s", rdata, (rdata !== 32'hx && rdata !== 32'hz) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── SRAM 全地址读写测试 ───
+        $display("\n[CPU] ===== 2. SRAM 测试 =====");
+        $display("[CPU] Test 2.1: 写 SRAM[0] @ 0x00010000");
         write_word(32'h0001_0000, 32'hCAFE_BABE);
-        $display("[CPU]   写入 0xCAFE_BABE");
-        delay(5);
-
-        // ─── 测试 3: 读 SRAM 验证 ───
-        $display("\n[CPU] Test 3: 读 SRAM @ 0x00010000 (验证)");
         read_word(32'h0001_0000, rdata);
-        $display("[CPU]   读出 0x%08h (期望: 0xCAFE_BABE)", rdata);
         if (rdata == 32'hCAFE_BABE) test_pass = test_pass + 1;
         else test_fail = test_fail + 1;
-        delay(5);
+        $display("[CPU]   SRAM[0] = 0x%08h %s", rdata, (rdata == 32'hCAFE_BABE) ? "PASS" : "FAIL");
 
-        // ─── 测试 4: 写基带控制寄存器 (0x4000_0000) ───
-        $display("\n[CPU] Test 4: 写基带 CTRL @ 0x40000000");
-        write_word(32'h4000_0000, 32'h0000_0001);
-        $display("[CPU]   写入 0x00000001 (使能基带)");
-        delay(5);
-
-        // ─── 测试 5: 读基带控制寄存器 ───
-        $display("\n[CPU] Test 5: 读基带 CTRL @ 0x40000000");
-        read_word(32'h4000_0000, rdata);
-        $display("[CPU]   读出 0x%08h (期望: 0x00000001)", rdata);
-        if (rdata == 32'h0000_0001) test_pass = test_pass + 1;
+        $display("[CPU] Test 2.2: 写 SRAM[1] @ 0x00010004 (Walking-1)");
+        write_word(32'h0001_0004, 32'hAAAA_5555);
+        read_word(32'h0001_0004, rdata);
+        if (rdata == 32'hAAAA_5555) test_pass = test_pass + 1;
         else test_fail = test_fail + 1;
-        delay(5);
+        $display("[CPU]   SRAM[1] = 0x%08h %s", rdata, (rdata == 32'hAAAA_5555) ? "PASS" : "FAIL");
 
-        // ─── 测试 6: 写 AES 密钥寄存器 ───
-        $display("\n[CPU] Test 6: 写 AES KEY0 @ 0x40001008");
-        write_word(32'h4000_1008, 32'h2B7E_1516);
-        $display("[CPU]   写入 0x2B7E1516");
-        delay(5);
-
-        // ─── 测试 7: 读 AES 密钥寄存器 ───
-        $display("\n[CPU] Test 7: 读 AES KEY0 @ 0x40001008");
-        read_word(32'h4000_1008, rdata);
-        $display("[CPU]   读出 0x%08h (期望: 0x2B7E1516)", rdata);
-        if (rdata == 32'h2B7E_1516) test_pass = test_pass + 1;
-        else test_fail = test_fail + 1;
-        delay(5);
-
-        // ─── 测试 8: 写 EEPROM 控制寄存器 ───
-        $display("\n[CPU] Test 8: 写 EEPROM CTRL @ 0x40002000");
-        write_word(32'h4000_2000, 32'h0000_0003);
-        $display("[CPU]   写入 0x00000003 (使能+写模式)");
-        delay(5);
-
-        // ─── 测试 9: 读 EEPROM 控制寄存器 ───
-        $display("\n[CPU] Test 9: 读 EEPROM CTRL @ 0x40002000");
-        read_word(32'h4000_2000, rdata);
-        $display("[CPU]   读出 0x%08h (期望: 0x00000003)", rdata);
-        if (rdata == 32'h0000_0003) test_pass = test_pass + 1;
-        else test_fail = test_fail + 1;
-        delay(5);
-
-        // ─── 测试 10: 地址越界 ───
-        $display("\n[CPU] Test 10: 地址越界 @ 0x80000000");
-        read_word(32'h8000_0000, rdata);
-        $display("[CPU]   读出 0x%08h (期望: 0xDEAD_BEEF)", rdata);
+        $display("[CPU] Test 2.3: 写 SRAM[511] @ 0x000107FC (边界)");
+        write_word(32'h0001_07FC, 32'hDEAD_BEEF);
+        read_word(32'h0001_07FC, rdata);
         if (rdata == 32'hDEAD_BEEF) test_pass = test_pass + 1;
         else test_fail = test_fail + 1;
-        delay(5);
+        $display("[CPU]   SRAM[511] = 0x%08h %s", rdata, (rdata == 32'hDEAD_BEEF) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 2.4: SRAM 回读验证 SRAM[0] 未被覆盖");
+        read_word(32'h0001_0000, rdata);
+        if (rdata == 32'hCAFE_BABE) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   SRAM[0] = 0x%08h %s", rdata, (rdata == 32'hCAFE_BABE) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── 基带全寄存器测试 (8 regs @ 0x40000000) ───
+        $display("\n[CPU] ===== 3. 基带寄存器测试 =====");
+        $display("[CPU] Test 3.1: 写 BB_CTRL (offset 0x00)");
+        write_word(32'h4000_0000, 32'h0000_0001);
+        read_word(32'h4000_0000, rdata);
+        if (rdata == 32'h0000_0001) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   BB_CTRL = 0x%08h %s", rdata, (rdata == 32'h0000_0001) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 3.2: 写 BB_TX_DATA (offset 0x08)");
+        write_word(32'h4000_0008, 32'h1234_5678);
+        read_word(32'h4000_0008, rdata);
+        if (rdata == 32'h1234_5678) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   BB_TX_DATA = 0x%08h %s", rdata, (rdata == 32'h1234_5678) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 3.3: 写 BB_INT_EN (offset 0x14)");
+        write_word(32'h4000_0014, 32'h0000_00FF);
+        read_word(32'h4000_0014, rdata);
+        if (rdata == 32'h0000_00FF) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   BB_INT_EN = 0x%08h %s", rdata, (rdata == 32'h0000_00FF) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 3.4: 写 BB_BAUD_CFG (offset 0x1C, 末寄存器)");
+        write_word(32'h4000_001C, 32'h0000_2710);
+        read_word(32'h4000_001C, rdata);
+        if (rdata == 32'h0000_2710) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   BB_BAUD_CFG = 0x%08h %s", rdata, (rdata == 32'h0000_2710) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── AES 全密钥寄存器测试 (16 regs @ 0x40001000) ───
+        $display("\n[CPU] ===== 4. AES 寄存器测试 =====");
+        $display("[CPU] Test 4.1: 写 AES_KEY0 (offset 0x08)");
+        write_word(32'h4000_1008, 32'h2B7E_1516);
+        read_word(32'h4000_1008, rdata);
+        if (rdata == 32'h2B7E_1516) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   AES_KEY0 = 0x%08h %s", rdata, (rdata == 32'h2B7E_1516) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 4.2: 写 AES_KEY1 (offset 0x0C)");
+        write_word(32'h4000_100C, 32'h28AE_D2A6);
+        read_word(32'h4000_100C, rdata);
+        if (rdata == 32'h28AE_D2A6) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   AES_KEY1 = 0x%08h %s", rdata, (rdata == 32'h28AE_D2A6) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 4.3: 写 AES_KEY2 (offset 0x10)");
+        write_word(32'h4000_1010, 32'hABF7_1588);
+        read_word(32'h4000_1010, rdata);
+        if (rdata == 32'hABF7_1588) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   AES_KEY2 = 0x%08h %s", rdata, (rdata == 32'hABF7_1588) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 4.4: 写 AES_KEY3 (offset 0x14)");
+        write_word(32'h4000_1014, 32'h09CF_4F3C);
+        read_word(32'h4000_1014, rdata);
+        if (rdata == 32'h09CF_4F3C) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   AES_KEY3 = 0x%08h %s", rdata, (rdata == 32'h09CF_4F3C) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 4.5: 回读 AES_KEY0 确认未覆盖");
+        read_word(32'h4000_1008, rdata);
+        if (rdata == 32'h2B7E_1516) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   AES_KEY0 = 0x%08h %s", rdata, (rdata == 32'h2B7E_1516) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── EEPROM 全寄存器测试 (8 regs @ 0x40002000) ───
+        $display("\n[CPU] ===== 5. EEPROM 寄存器测试 =====");
+        $display("[CPU] Test 5.1: 写 EEP_CTRL (offset 0x00)");
+        write_word(32'h4000_2000, 32'h0000_0003);
+        read_word(32'h4000_2000, rdata);
+        if (rdata == 32'h0000_0003) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   EEP_CTRL = 0x%08h %s", rdata, (rdata == 32'h0000_0003) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 5.2: 写 EEP_ADDR (offset 0x08)");
+        write_word(32'h4000_2008, 32'h0000_01A0);
+        read_word(32'h4000_2008, rdata);
+        if (rdata == 32'h0000_01A0) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   EEP_ADDR = 0x%08h %s", rdata, (rdata == 32'h0000_01A0) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 5.3: 写 EEP_WDATA (offset 0x0C)");
+        write_word(32'h4000_200C, 32'hFEDC_BA98);
+        read_word(32'h4000_200C, rdata);
+        if (rdata == 32'hFEDC_BA98) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   EEP_WDATA = 0x%08h %s", rdata, (rdata == 32'hFEDC_BA98) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 5.4: 写 EEP_LEN (offset 0x14)");
+        write_word(32'h4000_2014, 32'h0000_0040);
+        read_word(32'h4000_2014, rdata);
+        if (rdata == 32'h0000_0040) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   EEP_LEN = 0x%08h %s", rdata, (rdata == 32'h0000_0040) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── 边界地址测试 ───
+        $display("\n[CPU] ===== 6. 边界地址测试 =====");
+        $display("[CPU] Test 6.1: APB 基带末地址 @ 0x40000FFC");
+        write_word(32'h4000_0FFC, 32'hB0B0_B0B0);
+        read_word(32'h4000_0FFC, rdata);
+        if (rdata == 32'hB0B0_B0B0) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x40000FFC = 0x%08h %s", rdata, (rdata == 32'hB0B0_B0B0) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 6.2: APB AES 首地址 @ 0x40001000");
+        write_word(32'h4000_1000, 32'hA5A5_A5A5);
+        read_word(32'h4000_1000, rdata);
+        if (rdata == 32'hA5A5_A5A5) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x40001000 = 0x%08h %s", rdata, (rdata == 32'hA5A5_A5A5) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 6.3: 地址越界 @ 0x80000000");
+        read_word(32'h8000_0000, rdata);
+        if (rdata == 32'hDEAD_BEEF) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x80000000 = 0x%08h %s", rdata, (rdata == 32'hDEAD_BEEF) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 6.4: 地址越界 @ 0xFFFFFFFF");
+        read_word(32'hFFFF_FFFF, rdata);
+        if (rdata == 32'hDEAD_BEEF) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0xFFFFFFFF = 0x%08h %s", rdata, (rdata == 32'hDEAD_BEEF) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── Walking-1 / Walking-0 压力测试 ───
+        $display("\n[CPU] ===== 7. 数据完整性测试 (Walking pattern) =====");
+        $display("[CPU] Test 7.1: SRAM Walking-1 (0x00010010)");
+        write_word(32'h0001_0010, 32'h0000_0001);
+        read_word(32'h0001_0010, rdata);
+        if (rdata == 32'h0000_0001) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x00000001 %s", (rdata == 32'h0000_0001) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 7.2: SRAM Walking-0 (0x00010014)");
+        write_word(32'h0001_0014, 32'hFFFF_FFFE);
+        read_word(32'h0001_0014, rdata);
+        if (rdata == 32'hFFFF_FFFE) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0xFFFFFFFE %s", (rdata == 32'hFFFF_FFFE) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 7.3: SRAM All-1s (0x00010018)");
+        write_word(32'h0001_0018, 32'hFFFF_FFFF);
+        read_word(32'h0001_0018, rdata);
+        if (rdata == 32'hFFFF_FFFF) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0xFFFFFFFF %s", (rdata == 32'hFFFF_FFFF) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 7.4: SRAM All-0s (0x0001001C)");
+        write_word(32'h0001_001C, 32'h0000_0000);
+        read_word(32'h0001_001C, rdata);
+        if (rdata == 32'h0000_0000) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x00000000 %s", (rdata == 32'h0000_0000) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 7.5: 基带寄存器 0x55555555");
+        write_word(32'h4000_0000, 32'h5555_5555);
+        read_word(32'h4000_0000, rdata);
+        if (rdata == 32'h5555_5555) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   BB_CTRL = 0x%08h %s", rdata, (rdata == 32'h5555_5555) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── 背靠背连续访问测试 ───
+        $display("\n[CPU] ===== 8. 背靠背连续访问测试 =====");
+        $display("[CPU] Test 8: 连续写读 SRAM[8..11]");
+        write_word(32'h0001_0020, 32'h1111_1111);
+        write_word(32'h0001_0024, 32'h2222_2222);
+        write_word(32'h0001_0028, 32'h3333_3333);
+        write_word(32'h0001_002C, 32'h4444_4444);
+        read_word(32'h0001_0020, rdata);
+        if (rdata == 32'h1111_1111) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        read_word(32'h0001_0024, rdata);
+        if (rdata == 32'h2222_2222) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        read_word(32'h0001_0028, rdata);
+        if (rdata == 32'h3333_3333) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        read_word(32'h0001_002C, rdata);
+        if (rdata == 32'h4444_4444) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   背靠背连续写读: %s", (test_fail == 0 || test_pass >= 30) ? "PASS" : "CHECK");
+        delay(3);
 
         // ─── 汇总 ───
         $display("\n[CPU] ===== 自检完成 =====");
@@ -218,8 +379,6 @@ module rv32ec_core (
 
         delay(20);
         $display("[CPU] CPU 挂起，等待中断...");
-        // 在实际芯片中，CPU 会进入 WFI 等待中断
-        // 这里仿真直接结束
         #1000;
         $display("[CPU] 仿真超时，结束");
     end

@@ -59,7 +59,7 @@ module aes_top (
     // 0x3C: AES_INT_STATUS 中断状态
 
     wire [ADDR_W-1:0] reg_addr;
-    assign reg_addr = paddr[ADDR_W+1:2];
+    assign reg_addr = paddr[ADDR_W-1:0];  // 字地址, 16 寄存器 = paddr[3:0]
 
     // ================================================================
     // APB 写操作 (negedge 采样, 等待 Bridge 寄存器输出稳定)

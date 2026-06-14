@@ -307,7 +307,7 @@ module soc_top (
         .presetn (apb_rst_n),
         .psel    (psel_bb),
         .penable (apb_penable),
-        .paddr   (apb_paddr),
+        .paddr   (apb_paddr - 12'h000),  // 基带基址 = 0x000 (word offset)
         .pwrite  (apb_pwrite),
         .pwdata  (apb_pwdata),
         .prdata  (apb_prdata_bb),
@@ -328,7 +328,7 @@ module soc_top (
         .presetn (apb_rst_n),
         .psel    (psel_aes),
         .penable (apb_penable),
-        .paddr   (apb_paddr),
+        .paddr   (apb_paddr - 12'h400),  // AES 基址 = 0x400 (word offset)
         .pwrite  (apb_pwrite),
         .pwdata  (apb_pwdata),
         .prdata  (apb_prdata_aes),
@@ -346,7 +346,7 @@ module soc_top (
         .presetn (apb_rst_n),
         .psel    (psel_eep),
         .penable (apb_penable),
-        .paddr   (apb_paddr),
+        .paddr   (apb_paddr - 12'h800),  // EEPROM 基址 = 0x800 (word offset)
         .pwrite  (apb_pwrite),
         .pwdata  (apb_pwdata),
         .prdata  (apb_prdata_eep),

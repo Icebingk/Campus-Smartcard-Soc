@@ -56,7 +56,7 @@ module bb_top (
     // 0x1C: BB_BAUD_CFG   波特率配置
 
     wire [ADDR_W-1:0] reg_addr;
-    assign reg_addr = paddr[ADDR_W+1:2];  // 字地址
+    assign reg_addr = paddr[ADDR_W-1:0];  // 字地址, 8 寄存器 = paddr[2:0]
 
     // ================================================================
     // APB 写操作 (negedge 采样, 等待 Bridge 寄存器输出稳定)
