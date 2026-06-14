@@ -73,7 +73,7 @@ module aes_top (
             for (i = 0; i < NUM_REGS; i = i + 1) begin
                 regfile[i] <= 32'h0000_0000;
             end
-        end else if (apb_write && (reg_addr < NUM_REGS)) begin
+        end else if (apb_write) begin
             regfile[reg_addr] <= pwdata;
         end
     end
@@ -83,10 +83,7 @@ module aes_top (
     // ================================================================
     always @(*) begin
         if (psel && !pwrite) begin
-            if (reg_addr < NUM_REGS)
-                prdata = regfile[reg_addr];
-            else
-                prdata = 32'hDEAD_BEEF;
+            prdata = regfile[reg_addr];
         end else begin
             prdata = 32'h0;
         end
@@ -96,7 +93,7 @@ module aes_top (
     // APB 响应
     // ================================================================
     assign pready  = 1'b1;
-    assign pslverr = (psel && penable && (reg_addr >= NUM_REGS));
+    assign pslverr = 1'b0;
 
     // ================================================================
     // 中断逻辑（存根）

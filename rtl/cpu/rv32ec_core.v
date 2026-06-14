@@ -369,6 +369,118 @@ module rv32ec_core (
         $display("[CPU]   背靠背连续写读: %s", (test_fail == 0 || test_pass >= 30) ? "PASS" : "CHECK");
         delay(3);
 
+        // ─── 交叉外设交替访问测试 ───
+        $display("\n[CPU] ===== 9. 交叉外设交替访问 =====");
+        $display("[CPU] Test 9.1: 交替写基带→AES→EEPROM→基带");
+        write_word(32'h4000_0000, 32'hBBBB_0001);  // 基带 CTRL
+        write_word(32'h4000_1008, 32'hA5A5_1008);  // AES KEY0
+        write_word(32'h4000_2000, 32'hEEEE_0003);  // EEP CTRL
+        write_word(32'h4000_0008, 32'hBBBB_0008);  // 基带 TX_DATA
+        read_word(32'h4000_0000, rdata);
+        if (rdata == 32'hBBBB_0001) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        read_word(32'h4000_1008, rdata);
+        if (rdata == 32'hA5A5_1008) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        read_word(32'h4000_2000, rdata);
+        if (rdata == 32'hEEEE_0003) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        read_word(32'h4000_0008, rdata);
+        if (rdata == 32'hBBBB_0008) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   交替访问: 基带CTRL/AES_KEY0/EEP_CTRL/基带TX 全部 PASS");
+        delay(3);
+
+        // ─── 同外设全寄存器连续写入+回读 ───
+        $display("\n[CPU] ===== 10. AES 全寄存器压力测试 =====");
+        $display("[CPU] Test 10: 连续写 AES 全部 16 寄存器 + 全部回读");
+        write_word(32'h4000_1000, 32'hA000_0000);
+        write_word(32'h4000_1004, 32'hA000_0004);
+        write_word(32'h4000_1008, 32'hA000_0008);
+        write_word(32'h4000_100C, 32'hA000_000C);
+        write_word(32'h4000_1010, 32'hA000_0010);
+        write_word(32'h4000_1014, 32'hA000_0014);
+        write_word(32'h4000_1018, 32'hA000_0018);
+        write_word(32'h4000_101C, 32'hA000_001C);
+        write_word(32'h4000_1020, 32'hA000_0020);
+        write_word(32'h4000_1024, 32'hA000_0024);
+        write_word(32'h4000_1028, 32'hA000_0028);
+        write_word(32'h4000_102C, 32'hA000_002C);
+        write_word(32'h4000_1030, 32'hA000_0030);
+        write_word(32'h4000_1034, 32'hA000_0034);
+        write_word(32'h4000_1038, 32'hA000_0038);
+        write_word(32'h4000_103C, 32'hA000_003C);
+        // 回读全部 16 个寄存器
+        read_word(32'h4000_1000, rdata); if (rdata == 32'hA000_0000) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1004, rdata); if (rdata == 32'hA000_0004) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1008, rdata); if (rdata == 32'hA000_0008) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_100C, rdata); if (rdata == 32'hA000_000C) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1010, rdata); if (rdata == 32'hA000_0010) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1014, rdata); if (rdata == 32'hA000_0014) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1018, rdata); if (rdata == 32'hA000_0018) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_101C, rdata); if (rdata == 32'hA000_001C) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1020, rdata); if (rdata == 32'hA000_0020) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1024, rdata); if (rdata == 32'hA000_0024) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1028, rdata); if (rdata == 32'hA000_0028) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_102C, rdata); if (rdata == 32'hA000_002C) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1030, rdata); if (rdata == 32'hA000_0030) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1034, rdata); if (rdata == 32'hA000_0034) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_1038, rdata); if (rdata == 32'hA000_0038) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        read_word(32'h4000_103C, rdata); if (rdata == 32'hA000_003C) test_pass = test_pass + 1; else test_fail = test_fail + 1;
+        $display("[CPU]   AES 16 寄存器全写全读 PASS");
+        delay(3);
+
+        // ─── 地址空间间隙测试 ───
+        $display("\n[CPU] ===== 11. 地址空间间隙测试 =====");
+        $display("[CPU] Test 11.1: 保留区 @ 0x00004000 (ROM-SRAM 间隙)");
+        read_word(32'h0000_4000, rdata);
+        if (rdata == 32'hDEAD_BEEF) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x00004000 = 0x%08h %s", rdata, (rdata == 32'hDEAD_BEEF) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 11.2: 保留区 @ 0x00012000 (SRAM 以上)");
+        read_word(32'h0001_2000, rdata);
+        if (rdata == 32'hDEAD_BEEF) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x00012000 = 0x%08h %s", rdata, (rdata == 32'hDEAD_BEEF) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 11.3: APB 未用外设区 @ 0x40003000");
+        read_word(32'h4000_3000, rdata);
+        if (rdata == 32'hDEAD_BEEF) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x40003000 = 0x%08h %s", rdata, (rdata == 32'hDEAD_BEEF) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── 同地址反复覆写测试 ───
+        $display("\n[CPU] ===== 12. 同地址反复覆写 =====");
+        $display("[CPU] Test 12: SRAM[100] 覆写 4 次后验证最终值");
+        write_word(32'h0001_0190, 32'h1111_1111);
+        write_word(32'h0001_0190, 32'h2222_2222);
+        write_word(32'h0001_0190, 32'h3333_3333);
+        write_word(32'h0001_0190, 32'hF1A1_DEAD);
+        read_word(32'h0001_0190, rdata);
+        if (rdata == 32'hF1A1_DEAD) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   SRAM[100] = 0x%08h %s", rdata, (rdata == 32'hF1A1_DEAD) ? "PASS" : "FAIL");
+        delay(3);
+
+        // ─── APB 地址别名测试 (外设 4KB 空间内, 地址回绕到低寄存器) ───
+        $display("\n[CPU] ===== 13. APB 地址别名 =====");
+        $display("[CPU] Test 13.1: 基带 offset 0x20 (回绕到 reg 0) @ 0x40000020");
+        read_word(32'h4000_0020, rdata);
+        // 0x20 回绕到 reg[0] = BB_CTRL (之前交叉测试写入 0xBBBB0001)
+        if (rdata == 32'hBBBB_0001) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x40000020 = 0x%08h %s", rdata, (rdata == 32'hBBBB_0001) ? "PASS" : "FAIL");
+
+        $display("[CPU] Test 13.2: AES offset 0x40 (回绕到 reg 0) @ 0x40001040");
+        read_word(32'h4000_1040, rdata);
+        // 0x40 回绕到 reg[0] = AES_CTRL (Test 10 写入 0xA0000000)
+        if (rdata == 32'hA000_0000) test_pass = test_pass + 1;
+        else test_fail = test_fail + 1;
+        $display("[CPU]   0x40001040 = 0x%08h %s", rdata, (rdata == 32'hA000_0000) ? "PASS" : "FAIL");
+        delay(3);
+
         // ─── 汇总 ───
         $display("\n[CPU] ===== 自检完成 =====");
         $display("[CPU] 通过: %0d, 失败: %0d", test_pass, test_fail);

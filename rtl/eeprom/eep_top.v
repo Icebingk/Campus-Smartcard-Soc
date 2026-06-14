@@ -69,7 +69,7 @@ module eep_top (
             for (i = 0; i < NUM_REGS; i = i + 1) begin
                 regfile[i] <= 32'h0000_0000;
             end
-        end else if (apb_write && (reg_addr < NUM_REGS)) begin
+        end else if (apb_write) begin
             regfile[reg_addr] <= pwdata;
         end
     end
@@ -79,10 +79,7 @@ module eep_top (
     // ================================================================
     always @(*) begin
         if (psel && !pwrite) begin
-            if (reg_addr < NUM_REGS)
-                prdata = regfile[reg_addr];
-            else
-                prdata = 32'hDEAD_BEEF;
+            prdata = regfile[reg_addr];
         end else begin
             prdata = 32'h0;
         end
@@ -92,10 +89,10 @@ module eep_top (
     // APB 响应
     // ================================================================
     assign pready  = 1'b1;
-    assign pslverr = (psel && penable && (reg_addr >= NUM_REGS));
+    assign pslverr = (psel && penable && (paddr >= NUM_REGS));
 
     // ================================================================
-    // I2C 接口（存根：弱上拉）
+    // I2C 接口（存根：弱上拉）1'b0
     // ================================================================
     assign i2c_scl = 1'bz;   // 高阻，外部上拉
     assign i2c_sda = 1'bz;

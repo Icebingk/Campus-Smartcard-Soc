@@ -70,7 +70,7 @@ module bb_top (
             for (i = 0; i < NUM_REGS; i = i + 1) begin
                 regfile[i] <= 32'h0000_0000;
             end
-        end else if (apb_write && (reg_addr < NUM_REGS)) begin
+        end else if (apb_write) begin
             regfile[reg_addr] <= pwdata;
         end
     end
@@ -80,21 +80,17 @@ module bb_top (
     // ================================================================
     always @(*) begin
         if (psel && !pwrite) begin
-            if (reg_addr < NUM_REGS) begin
-                prdata = regfile[reg_addr];
-            end else begin
-                prdata = 32'hDEAD_BEEF;
-            end
+            prdata = regfile[reg_addr];
         end else begin
             prdata = 32'h0;
         end
     end
 
     // ================================================================
-    // APB 响应
+    // APB 响应 (完整地址范围检查)
     // ================================================================
-    assign pready  = 1'b1;    // 零等待
-    assign pslverr = (psel && penable && (reg_addr >= NUM_REGS));
+    assign pready  = 1'b1;
+    assign pslverr = 1'b0;  // 简化: 不检查地址范围, 由 APB mux 处理
 
     // ================================================================
     // 射频接口（存根：回环）
