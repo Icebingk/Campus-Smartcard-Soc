@@ -1,0 +1,42 @@
+# ModelSim generated files
+work/
+sim/scripts/work/
+*.wlf
+sim/scripts/wlft*
+sim/scripts/vsim_stacktrace.vstf
+*.vcd
+*.vpd
+transcript
+vsim.wlf
+modelsim.ini
+vlog.opt
+sim/scripts/results.txt
+sim/scripts/(null)
+*.jpg
+
+# Vivado generated files
+*.jou
+*.log
+*.str
+*.xpr
+*.cache/
+*.runs/
+*.hw/
+*.ip_user_files/
+*.sim/
+.svn/
+.vivado/
+
+# Outputs
+syn/outputs/
+*.edf
+*.sdc_used
+
+# Compiled libraries
+*.lib
+
+# OS files
+Thumbs.db
+Desktop.ini
+*.swp
+*~
