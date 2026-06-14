@@ -5,7 +5,7 @@
 #       vivado -mode batch -source synthesis.tcl   (若工程已存在)
 # ================================================================
 
-set out_dir  "./outputs"
+set out_dir  "../outputs"
 
 # ─── 打开工程 (若不存在则创建) ───
 if {[get_projects -quiet] eq ""} {

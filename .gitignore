@@ -26,8 +26,7 @@ sim/scripts/(null)
 *.sim/
 .svn/
 .vivado/
-
-# Outputs
+syn/vivado/
 syn/outputs/
 *.edf
 *.sdc_used

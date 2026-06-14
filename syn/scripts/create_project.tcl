@@ -6,15 +6,15 @@
 
 # ─── 工程配置 ───
 set project_name    "smart_card_soc"
-set project_dir     "."
+set project_dir     "../vivado"
 set rtl_dir         "../../rtl"
 set sim_dir         "../../sim"
 set part            "xc7a35tcsg324-1"      ;# FPGA 原型 (Artix-7)
 # set part          "none"                  ;# ASIC 流程
 
 # ─── 清理旧工程 ───
-if {[file exists $project_name]} {
-    file delete -force $project_name
+if {[file exists $project_dir/$project_name]} {
+    file delete -force $project_dir/$project_name
 }
 
 # ═══════════════════════════════════════════════════════════════
@@ -72,24 +72,11 @@ set_property top soc_top [current_fileset]
 update_compile_order -fileset sources_1
 
 # ═══════════════════════════════════════════════════════════════
-# 5. 基本时序约束 (13.56 MHz)
+# 5. 添加时序约束 (XDC)
 # ═══════════════════════════════════════════════════════════════
 
-create_clock -period 73.746 -name clk_sys [get_ports clk_sys]
-create_clock -period 73.746 -name rf_clk  [get_ports rf_clk]
-
-set_clock_groups -asynchronous \
-    -group [get_clocks clk_sys] \
-    -group [get_clocks rf_clk]
-
-set_input_delay  -clock clk_sys -max 5.0 [get_ports {rf_rx sleep test_mode scan_in}]
-set_input_delay  -clock clk_sys -min 0.0 [get_ports {rf_rx sleep test_mode scan_in}]
-set_output_delay -clock clk_sys -max 5.0 [get_ports {rf_tx scan_out}]
-set_output_delay -clock clk_sys -min 0.0 [get_ports {rf_tx scan_out}]
-
-set_false_path -from [get_ports rst_n]
-
-puts "\[VIVADO\] 时序约束已创建 (clk_sys = 13.56 MHz)"
+add_files -fileset constrs_1 -norecurse ../constraints/soc_timing.xdc
+puts "\[VIVADO\] 已添加约束 soc_timing.xdc (clk_sys = 13.56 MHz)"
 
 # ═══════════════════════════════════════════════════════════════
 # 6. 完成
