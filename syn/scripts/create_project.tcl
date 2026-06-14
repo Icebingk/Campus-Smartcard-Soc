@@ -1,92 +1,92 @@
 # ================================================================
-# Vivado 工程生成脚本 — 校园智能卡 SoC
-# 用法: vivado -mode batch -source create_project.tcl
-#       vivado -mode gui  -source create_project.tcl   (GUI)
+# Vivado Project Creation — Campus Smartcard SoC
+# Usage: vivado -mode batch -source create_project.tcl
+#        vivado -mode gui  -source create_project.tcl   (GUI)
 # ================================================================
 
-# ─── 工程配置 ───
+# --- Project Config ---
 set project_name    "smart_card_soc"
 set project_dir     "../vivado"
 set rtl_dir         "../../rtl"
 set sim_dir         "../../sim"
-set part            "xc7a35tcsg324-1"      ;# FPGA 原型 (Artix-7)
-# set part          "none"                  ;# ASIC 流程
+set part            "xc7a35tcsg324-1"      ;# FPGA prototype (Artix-7)
+# set part          "none"                  ;# ASIC flow
 
-# ─── 清理旧工程 ───
+# --- Cleanup ---
 if {[file exists $project_dir/$project_name]} {
     file delete -force $project_dir/$project_name
 }
 
-# ═══════════════════════════════════════════════════════════════
-# 1. 创建工程
-# ═══════════════════════════════════════════════════════════════
+# ================================================================
+# 1. Create Project
+# ================================================================
 create_project -force $project_name $project_dir -part $part
 set_property target_language Verilog [current_project]
 set_property source_mgmt_mode All [current_project]
 
-puts "\[VIVADO\] 工程 $project_name 创建完成 (器件: $part)"
+puts "\[VIVADO\] Project $project_name created (part: $part)"
 
-# ═══════════════════════════════════════════════════════════════
-# 2. 添加 RTL 设计源 (按编译依赖顺序)
-# ═══════════════════════════════════════════════════════════════
+# ================================================================
+# 2. Add RTL Sources (dependency order)
+# ================================================================
 
-# ─── 存储器 ───
+# --- Memory ---
 add_files -norecurse $rtl_dir/mem/rom_model.v
 add_files -norecurse $rtl_dir/mem/sram_model.v
 
-# ─── 总线 ───
+# --- Bus ---
 add_files -norecurse $rtl_dir/bus/apb_regfile_template.v
 add_files -norecurse $rtl_dir/bus/ahb2apb_bridge.v
 add_files -norecurse $rtl_dir/bus/ahb_matrix.v
 
-# ─── CPU 行为模型 ───
+# --- CPU Behavioral Model ---
 add_files -norecurse $rtl_dir/cpu/rv32ec_core.v
 
-# ─── APB 外设 ───
+# --- APB Peripherals ---
 add_files -norecurse $rtl_dir/baseband/bb_top.v
 add_files -norecurse $rtl_dir/aes/aes_top.v
 add_files -norecurse $rtl_dir/eeprom/eep_top.v
 add_files -norecurse $rtl_dir/pmu/pmu_top.v
 
-# ─── 顶层 ───
+# --- Top-Level ---
 add_files -norecurse $rtl_dir/top/soc_top.v
 
-puts "\[VIVADO\] RTL 源文件: [llength [get_files -of_objects [get_filesets sources_1]]] 个"
+puts "\[VIVADO\] RTL sources: [llength [get_files -of_objects [get_filesets sources_1]]] files"
 
-# ═══════════════════════════════════════════════════════════════
-# 3. 添加仿真源 (sim_1)
-# ═══════════════════════════════════════════════════════════════
+# ================================================================
+# 3. Add Simulation Sources (sim_1)
+# ================================================================
 add_files -fileset sim_1 -norecurse $sim_dir/tb/ahb_master_bfm.v
 add_files -fileset sim_1 -norecurse $sim_dir/tb/tb_ahb_bus.v
 add_files -fileset sim_1 -norecurse $sim_dir/tb/tb_soc_top.v
 
 set_property top tb_soc_top [get_filesets sim_1]
-# set_property top tb_ahb_bus [get_filesets sim_1]  ;# 总线仿真
+# set_property top tb_ahb_bus [get_filesets sim_1]  ;# bus-only sim
 
-puts "\[VIVADO\] 仿真顶层 = tb_soc_top"
+puts "\[VIVADO\] Sim top = tb_soc_top"
 
-# ═══════════════════════════════════════════════════════════════
-# 4. 顶层 & 编译顺序
-# ═══════════════════════════════════════════════════════════════
+# ================================================================
+# 4. Set Top & Compile Order
+# ================================================================
 set_property top soc_top [current_fileset]
 update_compile_order -fileset sources_1
 
-# ═══════════════════════════════════════════════════════════════
-# 5. 添加时序约束 (XDC)
-# ═══════════════════════════════════════════════════════════════
+# ================================================================
+# 5. Add Timing Constraints (XDC)
+# ================================================================
 
 add_files -fileset constrs_1 -norecurse ../constraints/soc_timing.xdc
-puts "\[VIVADO\] 已添加约束 soc_timing.xdc (clk_sys = 13.56 MHz)"
+puts "\[VIVADO\] Constraints: soc_timing.xdc (clk_sys = 13.56 MHz)"
 
-# ═══════════════════════════════════════════════════════════════
-# 6. 完成
-# ═══════════════════════════════════════════════════════════════
+# ================================================================
+# 6. Done
+# ================================================================
 puts "\n\[VIVADO\] ========================================"
-puts "\[VIVADO\]  工程生成完成!"
-puts "\[VIVADO\]  工程     : $project_name"
-puts "\[VIVADO\]  顶层     : soc_top"
-puts "\[VIVADO\]  仿真顶层 : tb_soc_top"
-puts "\[VIVADO\]  下一步:"
-puts "\[VIVADO\]    source synthesis.tcl  (综合)"
-puts "\[VIVADO\]    launch_simulation      (仿真)"
+puts "\[VIVADO\]  Project ready!"
+puts "\[VIVADO\]  Project  : $project_name"
+puts "\[VIVADO\]  Top      : soc_top"
+puts "\[VIVADO\]  Sim Top  : tb_soc_top"
+puts "\[VIVADO\]  Next:"
+puts "\[VIVADO\]    source synthesis.tcl  (run synthesis)"
+puts "\[VIVADO\]    launch_simulation      (run simulation)"
 puts "\[VIVADO\] ========================================\n"
