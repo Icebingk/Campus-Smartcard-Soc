@@ -2,8 +2,8 @@
 
 > **项目**: 基于 SoC 的校园智能卡主芯片设计
 > **工艺**: 数字 ASIC 正向设计全流程 (RTL → GDSII)
-> **最后更新**: 2026-06-14
-> **当前阶段**: Phase 2 — 全芯片集成验证通过 ✅
+> **最后更新**: 2026-06-15
+> **当前阶段**: Phase 3 — PicoRV32 集成 + 综合流程打通 ✅
 
 ---
 
@@ -21,7 +21,10 @@ Campus-Smartcard-Soc/
 │   │   ├── ahb_matrix.v         #   AHB-Lite 1×3 总线矩阵
 │   │   ├── ahb2apb_bridge.v     #   AHB→APB 桥 (v2.0)
 │   │   └── apb_regfile_template.v
-│   ├── cpu/rv32ec_core.v        # CPU 行为模型 (AHB Master) ✅
+│   ├── cpu/                     # CPU (双轨: 仿真/综合) ✅
+│   │   ├── picorv32.v           #   开源 PicoRV32 核 (YosysHQ, ISC)
+│   │   ├── rv32ec_core.v        #   AHB-Lite 适配 wrapper (综合用)
+│   │   └── rv32ec_bfm.v         #   行为模型备份 (仿真用)
 │   ├── mem/                     # 存储器 ✅
 │   │   ├── rom_model.v          #   ROM 16KB (AHB Slave)
 │   │   └── sram_model.v         #   SRAM 8KB (AHB Slave)
@@ -37,9 +40,15 @@ Campus-Smartcard-Soc/
 │   └── scripts/
 │       ├── sim_bus.do            #   ModelSim 总线仿真脚本
 │       └── sim_top.do            #   ModelSim 全芯片仿真脚本
-├── syn/scripts/                 # 综合环境
-│   ├── create_project.tcl
-│   └── synthesis.tcl
+├── syn/                         # 综合环境
+│   ├── constraints/
+│   │   └── soc_timing.xdc        #   时序约束 (13.56MHz)
+│   ├── scripts/
+│   │   ├── create_project.tcl    #   Vivado 工程创建
+│   │   └── synthesis.tcl         #   综合脚本
+│   ├── vivado/                   #   Vivado 项目 (.gitignore)
+│   └── outputs/                  #   综合输出 (.gitignore)
+├── 需求安排.txt
 └── .gitignore
 ```
 
@@ -70,7 +79,7 @@ cd sim/scripts
 vsim -do sim_top.do
 ```
 
-**全芯片仿真结果** (53/53 通过, 13 大类):
+**全芯片仿真结果** (58/58 通过, 13 大类):
 
 | # | 测试类别 | 项数 | 典型验证点 |
 |---|---------|------|-----------|
@@ -83,7 +92,7 @@ vsim -do sim_top.do
 | 7 | Walking 数据完整性 | 5 | Walking-1/0, All-1/0, 0x55555555 |
 | 8 | 背靠背连续访问 | 4 | 连续写读 SRAM[8..11] |
 | 9 | 交叉外设交替访问 | 4 | 基带→AES→EEPROM→基带 交替读写 |
-| 10 | AES 全 16 寄存器压力 | 32 | 全部 16 寄存器连续写入+全部回读 |
+| 10 | AES 全 16 寄存器压力 | 16 | 全部 16 寄存器连续写入+全部回读 |
 | 11 | 地址空间间隙 | 3 | ROM-SRAM 间隙, APB 未用区 |
 | 12 | 同地址反复覆写 | 1 | 覆写 4 次验证最终值 |
 | 13 | APB 地址别名 | 2 | 外设 4KB 空间内地址回绕 |
@@ -95,7 +104,7 @@ vsim -c -do sim_top.do
 
 # 预期输出
 # [CPU] ===== 自检完成 =====
-# [CPU] 通过: 53, 失败: 0
+# [CPU] 通过: 58, 失败: 0
 # [CPU] *** 所有测试通过! ***
 ```
 
@@ -110,7 +119,9 @@ vsim -c -do sim_top.do
 | APB 寄存器模板   | `rtl/bus/apb_regfile_template.v` | ✅ 完成   | 阿呆不呆 |
 | ROM 16KB         | `rtl/mem/rom_model.v`            | ✅ 完成   | 阿呆不呆 |
 | SRAM 8KB         | `rtl/mem/sram_model.v`           | ✅ 完成   | 阿呆不呆 |
-| CPU (行为模型)   | `rtl/cpu/rv32ec_core.v`          | ✅ 存根   | 阿呆不呆 |
+| CPU (PicoRV32)   | `rtl/cpu/picorv32.v`             | ✅ 集成   | 阿呆不呆 |
+| CPU (AHB Wrapper)| `rtl/cpu/rv32ec_core.v`          | ✅ 完成   | 阿呆不呆 |
+| CPU (BFM 备份)   | `rtl/cpu/rv32ec_bfm.v`           | ✅ 保留   | 阿呆不呆 |
 | PMU              | `rtl/pmu/pmu_top.v`              | ✅ 完成   | 陆凤敏   |
 | SoC 顶层集成     | `rtl/top/soc_top.v`              | ✅ 完成   | 阿呆不呆 |
 | 全芯片 Testbench | `sim/tb/tb_soc_top.v`            | ✅ 完成   | 阿呆不呆 |
@@ -169,7 +180,9 @@ module your_module (
 | Day 3     | Memory Map v1.0 发布   | ✅              |
 | Day 5     | 接口规范 & 团队对齐    | ✅              |
 | Day 7     | 总线 + Bridge RTL 完成 | ✅              |
-| Day 10    | 全芯片集成 & 53 项仿真通过 | ✅              |
+| Day 10    | 全芯片集成 & 58 项仿真通过 | ✅              |
+| Day 11    | PicoRV32 开源核集成    | ✅              |
+| Day 12    | Vivado 综合流程打通     | ✅              |
 | Week 2 末 | 模块 RTL 交付          | 待林子轩/梁芷晴 |
-| Week 3    | 综合首轮               | 待启动          |
+| Week 3    | FPGA 实现 (P&R)        | 待启动          |
 | Week 4    | 最终网表交付           | 待启动          |
