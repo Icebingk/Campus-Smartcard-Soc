@@ -8,6 +8,8 @@
 // 负责人: 阿呆不呆
 // ============================================================================
 
+`timescale 1ns / 1ps
+
 module sram_model #(
     parameter SRAM_SIZE = 8192,        // 8KB = 2048 words (32-bit)
     parameter SRAM_ADDR_W = 11         // 13-bit byte addr → 11-bit word addr

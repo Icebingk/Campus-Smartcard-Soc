@@ -28,6 +28,18 @@ sim/scripts/(null)
 .vivado/
 syn/vivado/
 syn/outputs/
+
+# Firmware build artifacts
+fw/*.o
+fw/*.elf
+fw/*.hex
+fw/*.map
+
+# Simulation temp files
+sim/scripts/out.txt
+sim/scripts/sim_result.txt
+sim/scripts/sim_full.log
+sim/scripts/check_*.do
 *.edf
 *.sdc_used
 

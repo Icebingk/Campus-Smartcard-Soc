@@ -44,6 +44,31 @@ module rv32ec_core (
     wire [31:0] mem_rdata;
     wire        trap;
 
+    // Look-Ahead Interface (unused)
+    wire        mem_la_read;
+    wire        mem_la_write;
+    wire [31:0] mem_la_addr;
+    wire [31:0] mem_la_wdata;
+    wire [ 3:0] mem_la_wstrb;
+
+    // PCPI (unused, ENABLE_PCPI=0)
+    wire        pcpi_valid;
+    wire [31:0] pcpi_insn;
+    wire [31:0] pcpi_rs1;
+    wire [31:0] pcpi_rs2;
+    wire        pcpi_wr;
+    wire [31:0] pcpi_rd;
+    wire        pcpi_wait;
+    wire        pcpi_ready;
+
+    // IRQ
+    wire [31:0] irq_vec;
+    wire [31:0] eoi;
+
+    // Trace (unused)
+    wire        trace_valid;
+    wire [35:0] trace_data;
+
     // ================================================================
     // PicoRV32 Instance — RV32EC Configuration
     // ================================================================
@@ -84,19 +109,51 @@ module rv32ec_core (
         .mem_wstrb  (mem_wstrb),
         .mem_ready  (mem_ready),
         .mem_rdata  (mem_rdata),
-        .irq        ({31'b0, irq}),  // IRQ on bit 0
-        .eoi        ()
+        // Look-Ahead (unused)
+        .mem_la_read  (mem_la_read),
+        .mem_la_write (mem_la_write),
+        .mem_la_addr  (mem_la_addr),
+        .mem_la_wdata (mem_la_wdata),
+        .mem_la_wstrb (mem_la_wstrb),
+        // PCPI (disabled: ENABLE_PCPI=0)
+        .pcpi_valid (pcpi_valid),
+        .pcpi_insn  (pcpi_insn),
+        .pcpi_rs1   (pcpi_rs1),
+        .pcpi_rs2   (pcpi_rs2),
+        .pcpi_wr    (1'b0),
+        .pcpi_rd    (32'b0),
+        .pcpi_wait  (1'b0),
+        .pcpi_ready (1'b0),
+        // IRQ
+        .irq        (irq_vec),
+        .eoi        (eoi),
+        // Trace (unused)
+        .trace_valid (trace_valid),
+        .trace_data  (trace_data)
     );
 
     // ================================================================
     // PicoRV32 Memory → AHB-Lite Adapter
     // ================================================================
+    //
+    // PicoRV32 期望 mem_ready 在数据有效周期 = 1。
+    // AHB 流水线: 地址周期(N) → 数据周期(N+1)，即 1 cycle latency。
+    // 因此 mem_ready = mem_valid_r(上一周期有请求) && hready(总线就绪)
 
-    assign mem_ready = hready;
+    reg mem_valid_r;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            mem_valid_r <= 1'b0;
+        else
+            mem_valid_r <= mem_valid;
+    end
+
+    assign mem_ready = mem_valid_r && hready;
     assign mem_rdata = hrdata;
     assign sleep_req = 1'b0;
+    assign irq_vec   = {31'b0, irq};
 
-    // AHB output drive
+    // AHB output drive (registered, 1 cycle after PicoRV32)
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             haddr     <= 32'h0;

@@ -97,17 +97,42 @@ module tb_soc_top ();
     // 仿真控制
     // ================================================================
     initial begin
-        $display("[TB_TOP] ========================================");
-        $display("[TB_TOP]  校园智能卡 SoC 全芯片仿真");
-        $display("[TB_TOP]  时间: %0t", $time);
-        $display("[TB_TOP] ========================================");
+        $display("[TB] ========================================");
+        $display("[TB] Campus Smartcard SoC - Full Chip Simulation");
+        $display("[TB] Time: %0t", $time);
+        $display("[TB] ========================================");
 
-        // 等待 CPU 完成全部自检 (50+ 项测试)
-        #60000;
+        // Wait for PicoRV32 to execute firmware
+        // Firmware writes test_result (0xCAFEBABE) to SRAM[0x11FF0] on success
+        #40000;
 
-        $display("\n[TB_TOP] ===== 仿真完成 =====");
-        $display("[TB_TOP] 请查看波形确认各模块行为");
+        // Check firmware result via AHB bus signals
+        $display("\n[TB] ===== Firmware Check =====");
+        $display("[TB] PicoRV32 AHB: haddr=%08h htrans=%b hwrite=%b",
+            uut.cpu_haddr, uut.cpu_htrans, uut.cpu_hwrite);
+        $display("[TB] PicoRV32 trap=%b", uut.u_cpu.u_picorv32.trap);
+
+        // If PicoRV32 reached wfi, trap=1 (caught by CATCH_ILLINSN? No, wfi is valid)
+        // Check if CPU is idle (htrans=IDLE after completing tests)
+        if (uut.cpu_htrans == 2'b00) begin
+            $display("[TB] CPU is idle — firmware likely completed");
+        end
+
+        #20000;
+        $display("\n[TB] ===== Simulation Done =====");
+        $display("[TB] Check waveforms for detailed analysis");
         $finish;
+    end
+
+    // Monitor: detect writes to firmware test result address (0x00011FF0)
+    always @(posedge clk_sys) begin
+        if (uut.cpu_hwrite && uut.cpu_htrans == 2'b10 && uut.cpu_haddr == 32'h00011FF0) begin
+            $display("[TB] *** FIRMWARE WROTE TEST RESULT: %08h ***", uut.cpu_hwdata);
+            if (uut.cpu_hwdata == 32'hCAFEBABE)
+                $display("[TB] *** FIRMWARE SELF-TEST PASS! ***");
+            else
+                $display("[TB] *** FIRMWARE SELF-TEST FAIL (wrote %08h) ***", uut.cpu_hwdata);
+        end
     end
 
     // ================================================================

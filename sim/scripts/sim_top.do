@@ -22,9 +22,9 @@ vlog +acc -work work $RTL_DIR/bus/apb_regfile_template.v
 vlog +acc -work work $RTL_DIR/bus/ahb2apb_bridge.v
 vlog +acc -work work $RTL_DIR/bus/ahb_matrix.v
 
-# CPU
+# CPU (PicoRV32 + AHB Wrapper — real firmware execution)
 vlog +acc -work work $RTL_DIR/cpu/picorv32.v
-vlog +acc -work work $RTL_DIR/cpu/rv32ec_bfm.v
+vlog +acc -work work $RTL_DIR/cpu/rv32ec_core.v
 
 # 外设模块
 vlog +acc -work work $RTL_DIR/baseband/bb_top.v
