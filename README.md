@@ -187,3 +187,135 @@ module your_module (
 | Week 2 末 | 模块 RTL 交付          | 待林子轩/梁芷晴 |
 | Week 3    | FPGA 实现 (P&R)        | 待启动          |
 | Week 4    | 最终网表交付           | 待启动          |
+
+---
+
+## 7. 团队协作指南
+
+### 7.1 克隆仓库
+
+**方式一：SSH（推荐，无需反复输密码）**
+
+```bash
+git clone git@github.com:Icebingk/Campus-Smartcard-Soc.git
+cd Campus-Smartcard-Soc
+```
+
+**方式二：HTTPS（备用）**
+
+```bash
+git clone https://github.com/Icebingk/Campus-Smartcard-Soc.git
+cd Campus-Smartcard-Soc
+```
+
+### 7.2 配置 SSH Key（仅首次，一次性）
+
+打开终端（Git Bash 或 PowerShell），生成 SSH 密钥：
+
+```bash
+ssh-keygen -t ed25519 -C "你的邮箱@example.com"
+# 一路回车即可（默认路径，不设密码）
+```
+
+复制公钥：
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+将输出的内容添加到 GitHub：
+1. 登录 GitHub → 右上角头像 → **Settings**
+2. 左侧菜单 → **SSH and GPG keys**
+3. 点击 **New SSH key**
+4. Title 随便填（如"我的电脑"），Key 粘贴公钥内容
+5. 点击 **Add SSH key**
+
+验证是否配置成功：
+
+```bash
+ssh -T git@github.com
+# 预期输出: Hi Icebingk! You've successfully authenticated...
+```
+
+### 7.3 分支策略
+
+```
+master（主分支）—— 始终保持稳定、可综合、仿真通过
+  ├── bb/fsm       —— 林子轩：数字基带 FSM 开发
+  ├── aes/iter     —— 梁芷晴：AES 迭代引擎开发
+  ├── eep/ctrl     —— EEPROM 控制器开发
+  └── pmu/pdn      —— 陆凤敏：电源网络/后端
+```
+
+**规则：**
+- **master 分支禁止直接 push**（由队长阿呆不呆合并）
+- 每人从 master 拉自己的功能分支开发
+- 模块验证通过后，提 Pull Request 合并回 master
+
+### 7.4 日常协作流程
+
+**① 首次：克隆仓库**
+```bash
+git clone git@github.com:Icebingk/Campus-Smartcard-Soc.git
+cd Campus-Smartcard-Soc
+```
+
+**② 创建自己的功能分支**
+```bash
+git checkout -b 你的分支名
+# 例如:
+# 林子轩: git checkout -b bb/fsm
+# 梁芷晴: git checkout -b aes/iter
+```
+
+**③ 日常开发**
+```bash
+# 写代码...
+
+# 查看改了哪些文件
+git status
+
+# 添加修改
+git add rtl/你的模块/*.v
+
+# 提交（写清楚改了什么）
+git commit -m "feat: 完成曼彻斯特解码状态机"
+
+# 推送自己的分支到 GitHub
+git push -u origin 你的分支名
+```
+
+**④ 后续每次写代码前，先同步 master 最新代码**
+```bash
+git checkout master
+git pull
+git checkout 你的分支名
+git merge master
+```
+
+**⑤ 模块完成后，在 GitHub 网页提 Pull Request**
+1. 打开 https://github.com/Icebingk/Campus-Smartcard-Soc
+2. 点击 **Pull requests** → **New pull request**
+3. base 选 `master`，compare 选你的分支
+4. 点击 **Create pull request**，填写说明
+5. 通知阿呆不呆 Review 并合并
+
+### 7.5 提交信息规范
+
+遵循约定式提交格式：
+
+| 前缀     | 用途                       | 示例                                 |
+| -------- | -------------------------- | ------------------------------------ |
+| `feat:`  | 新功能/新模块              | `feat: 添加防冲突 FSM 状态机`        |
+| `fix:`   | 修 Bug                     | `fix: 修复 APB 读数据延迟一拍`       |
+| `docs:`  | 文档更新                   | `docs: 更新 memory_map 地址分配`     |
+| `refactor:` | 重构（不改功能）       | `refactor: 优化 AHB 仲裁逻辑`        |
+| `sim:`   | 仿真/测试相关              | `sim: 新增基带寄存器读写测试用例`    |
+| `syn:`   | 综合相关                   | `syn: 更新时序约束 13.56MHz`         |
+
+### 7.6 注意事项
+
+- `sim/scripts/work/`、`syn/vivado/`、`syn/outputs/` 等临时文件已加入 `.gitignore`，不会被提交
+- 仿真波形文件（`.wlf`、`.vcd`）不要提交，体积太大
+- 如果遇到合并冲突，先和队长沟通，不要强制覆盖
+- 有问题随时在群里 @阿呆不呆
