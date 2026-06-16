@@ -82,21 +82,21 @@ vsim -do sim_top.do
 
 **全芯片仿真结果** (58/58 通过, 13 大类):
 
-| # | 测试类别 | 项数 | 典型验证点 |
-|---|---------|------|-----------|
-| 1 | ROM 多字读取 | 2 | ROM[0], ROM[1] |
-| 2 | SRAM 多地址+边界 | 4 | SRAM[0], SRAM[1], SRAM[511], 回读保护 |
-| 3 | 基带全寄存器 | 4 | CTRL, TX_DATA, INT_EN, BAUD_CFG |
-| 4 | AES 全密钥寄存器 | 5 | KEY0~3 + 回读确认未串扰 |
-| 5 | EEPROM 全寄存器 | 4 | CTRL, ADDR, WDATA, LEN |
-| 6 | 边界地址 | 4 | 0x40000FFC, 0x40001000, 0x80000000, 0xFFFFFFFF |
-| 7 | Walking 数据完整性 | 5 | Walking-1/0, All-1/0, 0x55555555 |
-| 8 | 背靠背连续访问 | 4 | 连续写读 SRAM[8..11] |
-| 9 | 交叉外设交替访问 | 4 | 基带→AES→EEPROM→基带 交替读写 |
-| 10 | AES 全 16 寄存器压力 | 16 | 全部 16 寄存器连续写入+全部回读 |
-| 11 | 地址空间间隙 | 3 | ROM-SRAM 间隙, APB 未用区 |
-| 12 | 同地址反复覆写 | 1 | 覆写 4 次验证最终值 |
-| 13 | APB 地址别名 | 2 | 外设 4KB 空间内地址回绕 |
+| #  | 测试类别             | 项数 | 典型验证点                                     |
+| -- | -------------------- | ---- | ---------------------------------------------- |
+| 1  | ROM 多字读取         | 2    | ROM[0], ROM[1]                                 |
+| 2  | SRAM 多地址+边界     | 4    | SRAM[0], SRAM[1], SRAM[511], 回读保护          |
+| 3  | 基带全寄存器         | 4    | CTRL, TX_DATA, INT_EN, BAUD_CFG                |
+| 4  | AES 全密钥寄存器     | 5    | KEY0~3 + 回读确认未串扰                        |
+| 5  | EEPROM 全寄存器      | 4    | CTRL, ADDR, WDATA, LEN                         |
+| 6  | 边界地址             | 4    | 0x40000FFC, 0x40001000, 0x80000000, 0xFFFFFFFF |
+| 7  | Walking 数据完整性   | 5    | Walking-1/0, All-1/0, 0x55555555               |
+| 8  | 背靠背连续访问       | 4    | 连续写读 SRAM[8..11]                           |
+| 9  | 交叉外设交替访问     | 4    | 基带→AES→EEPROM→基带 交替读写               |
+| 10 | AES 全 16 寄存器压力 | 16   | 全部 16 寄存器连续写入+全部回读                |
+| 11 | 地址空间间隙         | 3    | ROM-SRAM 间隙, APB 未用区                      |
+| 12 | 同地址反复覆写       | 1    | 覆写 4 次验证最终值                            |
+| 13 | APB 地址别名         | 2    | 外设 4KB 空间内地址回绕                        |
 
 ```bash
 # 运行全芯片仿真
@@ -113,22 +113,26 @@ vsim -c -do sim_top.do
 
 ## 3. 模块状态
 
-| 模块             | 文件                               | 状态      | 负责人   |
-| ---------------- | ---------------------------------- | --------- | -------- |
-| AHB 总线矩阵     | `rtl/bus/ahb_matrix.v`           | ✅ 完成   | 阿呆不呆 |
-| AHB2APB 桥       | `rtl/bus/ahb2apb_bridge.v`       | ✅ v2.0   | 阿呆不呆 |
-| APB 寄存器模板   | `rtl/bus/apb_regfile_template.v` | ✅ 完成   | 阿呆不呆 |
-| ROM 16KB         | `rtl/mem/rom_model.v`            | ✅ 完成   | 阿呆不呆 |
-| SRAM 8KB         | `rtl/mem/sram_model.v`           | ✅ 完成   | 阿呆不呆 |
-| CPU (PicoRV32)   | `rtl/cpu/picorv32.v`             | ✅ 集成   | 阿呆不呆 |
-| CPU (AHB Wrapper)| `rtl/cpu/rv32ec_core.v`          | ✅ 完成   | 阿呆不呆 |
-| CPU (BFM 备份)   | `rtl/cpu/rv32ec_bfm.v`           | ✅ 保留   | 阿呆不呆 |
-| PMU              | `rtl/pmu/pmu_top.v`              | ✅ 完成   | 陆凤敏   |
-| SoC 顶层集成     | `rtl/top/soc_top.v`              | ✅ 完成   | 阿呆不呆 |
-| 全芯片 Testbench | `sim/tb/tb_soc_top.v`            | ✅ 完成   | 阿呆不呆 |
-| 数字基带         | `rtl/baseband/bb_top.v`          | ⚠️ 存根 | 林子轩   |
-| AES-128          | `rtl/aes/aes_top.v`              | ⚠️ 存根 | 梁芷晴   |
-| EEPROM 控制器    | `rtl/eeprom/eep_top.v`           | ⚠️ 存根 | —       |
+| 模块              | 文件                               | 状态      | 负责人   |
+| ----------------- | ---------------------------------- | --------- | -------- |
+| AHB 总线矩阵      | `rtl/bus/ahb_matrix.v`           | ✅ 完成   | 阿呆不呆 |
+| AHB2APB 桥        | `rtl/bus/ahb2apb_bridge.v`       | ✅ v2.0   | 阿呆不呆 |
+| APB 寄存器模板    | `rtl/bus/apb_regfile_template.v` | ✅ 完成   | 阿呆不呆 |
+| ROM 16KB          | `rtl/mem/rom_model.v`            | ✅ 完成   | 阿呆不呆 |
+| SRAM 8KB          | `rtl/mem/sram_model.v`           | ✅ 完成   | 阿呆不呆 |
+| CPU (PicoRV32)    | `rtl/cpu/picorv32.v`             | ✅ 集成   | 阿呆不呆 |
+| CPU (AHB Wrapper) | `rtl/cpu/rv32ec_core.v`          | ✅ 完成   | 阿呆不呆 |
+| CPU (BFM 备份)    | `rtl/cpu/rv32ec_bfm.v`           | ✅ 保留   | 阿呆不呆 |
+| PMU               | `rtl/pmu/pmu_top.v`              | ✅ 完成   | 陆凤敏   |
+| SoC 顶层集成      | `rtl/top/soc_top.v`              | ✅ 完成   | 阿呆不呆 |
+| 全芯片 Testbench  | `sim/tb/tb_soc_top.v`            | ✅ 完成   | 阿呆不呆 |
+| 数字基带          | `rtl/baseband/bb_top.v`          | ⚠️ 存根 | 林子轩   |
+| AES-128           | `rtl/aes/aes_top.v`              | ⚠️ 存根 | 梁芷晴   |
+| EEPROM 控制器     | `rtl/eeprom/eep_top.v`           | ⚠️ 存根 | 何展韬   |
+| Memory Map        | `doc/memory_map.md`              | ✅ v1.0  | 何展韬   |
+| 接口规范          | `doc/interface_spec.md`          | ✅ v1.0  | 何展韬   |
+| 芯片 Spec         | `doc/`                           | ✅ 完成  | 何展韬   |
+| 项目甘特图        | —                                | ⚠️ 待定 | 何展韬   |
 
 ---
 
@@ -140,7 +144,7 @@ vsim -c -do sim_top.do
 | **林子轩**   | 数字基带     | ISO14443 防冲突 FSM、曼彻斯特编解码   |
 | **梁芷晴**   | 加密引擎     | 迭代型 AES-128 协处理器               |
 | **陆凤敏**   | 后端物理设计 | SDC、IR-Drop、电源网络                |
-| **何展韬**   | 整体设计     | Spec、软硬件划分、微架构              |
+| **何展韬**   | 整体设计     | 芯片 Spec、软硬件划分、微架构拓扑、接口标准、甘特图 |
 
 ---
 
@@ -175,18 +179,18 @@ module your_module (
 
 ## 6. 时间节点
 
-| 日期      | 事项                   | 状态            |
-| --------- | ---------------------- | --------------- |
-| Day 1     | 需求定义 & 技术选型    | ✅              |
-| Day 3     | Memory Map v1.0 发布   | ✅              |
-| Day 5     | 接口规范 & 团队对齐    | ✅              |
-| Day 7     | 总线 + Bridge RTL 完成 | ✅              |
+| 日期      | 事项                       | 状态            |
+| --------- | -------------------------- | --------------- |
+| Day 1     | 需求定义 & 技术选型        | ✅              |
+| Day 3     | Memory Map v1.0 发布       | ✅              |
+| Day 5     | 接口规范 & 团队对齐        | ✅              |
+| Day 7     | 总线 + Bridge RTL 完成     | ✅              |
 | Day 10    | 全芯片集成 & 58 项仿真通过 | ✅              |
-| Day 11    | PicoRV32 开源核集成    | ✅              |
-| Day 12    | Vivado 综合流程打通     | ✅              |
-| Week 2 末 | 模块 RTL 交付          | 待林子轩/梁芷晴 |
-| Week 3    | FPGA 实现 (P&R)        | 待启动          |
-| Week 4    | 最终网表交付           | 待启动          |
+| Day 11    | PicoRV32 开源核集成        | ✅              |
+| Day 12    | Vivado 综合流程打通        | ✅              |
+| Week 2 末 | 模块 RTL 交付              | 待林子轩/梁芷晴 |
+| Week 3    | FPGA 实现 (P&R)            | 待启动          |
+| Week 4    | 最终网表交付               | 待启动          |
 
 ---
 
@@ -213,7 +217,7 @@ cd Campus-Smartcard-Soc
 打开终端（Git Bash 或 PowerShell），生成 SSH 密钥：
 
 ```bash
-ssh-keygen -t ed25519 -C "你的邮箱@example.com"
+ssh-keygen -t ed25519 -C "1520349663@qq.com"
 # 一路回车即可（默认路径，不设密码）
 ```
 
@@ -224,6 +228,7 @@ cat ~/.ssh/id_ed25519.pub
 ```
 
 将输出的内容添加到 GitHub：
+
 1. 登录 GitHub → 右上角头像 → **Settings**
 2. 左侧菜单 → **SSH and GPG keys**
 3. 点击 **New SSH key**
@@ -248,6 +253,7 @@ master（主分支）—— 始终保持稳定、可综合、仿真通过
 ```
 
 **规则：**
+
 - **master 分支禁止直接 push**（由队长阿呆不呆合并）
 - 每人从 master 拉自己的功能分支开发
 - 模块验证通过后，提 Pull Request 合并回 master
@@ -255,12 +261,14 @@ master（主分支）—— 始终保持稳定、可综合、仿真通过
 ### 7.4 日常协作流程
 
 **① 首次：克隆仓库**
+
 ```bash
 git clone git@github.com:Icebingk/Campus-Smartcard-Soc.git
 cd Campus-Smartcard-Soc
 ```
 
 **② 创建自己的功能分支**
+
 ```bash
 git checkout -b 你的分支名
 # 例如:
@@ -269,6 +277,7 @@ git checkout -b 你的分支名
 ```
 
 **③ 日常开发**
+
 ```bash
 # 写代码...
 
@@ -286,6 +295,7 @@ git push -u origin 你的分支名
 ```
 
 **④ 后续每次写代码前，先同步 master 最新代码**
+
 ```bash
 git checkout master
 git pull
@@ -294,6 +304,7 @@ git merge master
 ```
 
 **⑤ 模块完成后，在 GitHub 网页提 Pull Request**
+
 1. 打开 https://github.com/Icebingk/Campus-Smartcard-Soc
 2. 点击 **Pull requests** → **New pull request**
 3. base 选 `master`，compare 选你的分支
@@ -304,14 +315,14 @@ git merge master
 
 遵循约定式提交格式：
 
-| 前缀     | 用途                       | 示例                                 |
-| -------- | -------------------------- | ------------------------------------ |
-| `feat:`  | 新功能/新模块              | `feat: 添加防冲突 FSM 状态机`        |
-| `fix:`   | 修 Bug                     | `fix: 修复 APB 读数据延迟一拍`       |
-| `docs:`  | 文档更新                   | `docs: 更新 memory_map 地址分配`     |
-| `refactor:` | 重构（不改功能）       | `refactor: 优化 AHB 仲裁逻辑`        |
-| `sim:`   | 仿真/测试相关              | `sim: 新增基带寄存器读写测试用例`    |
-| `syn:`   | 综合相关                   | `syn: 更新时序约束 13.56MHz`         |
+| 前缀          | 用途             | 示例                                |
+| ------------- | ---------------- | ----------------------------------- |
+| `feat:`     | 新功能/新模块    | `feat: 添加防冲突 FSM 状态机`     |
+| `fix:`      | 修 Bug           | `fix: 修复 APB 读数据延迟一拍`    |
+| `docs:`     | 文档更新         | `docs: 更新 memory_map 地址分配`  |
+| `refactor:` | 重构（不改功能） | `refactor: 优化 AHB 仲裁逻辑`     |
+| `sim:`      | 仿真/测试相关    | `sim: 新增基带寄存器读写测试用例` |
+| `syn:`      | 综合相关         | `syn: 更新时序约束 13.56MHz`      |
 
 ### 7.6 注意事项
 
