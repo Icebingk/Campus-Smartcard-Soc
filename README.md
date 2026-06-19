@@ -126,9 +126,9 @@ vsim -c -do sim_top.do
 | PMU               | `rtl/pmu/pmu_top.v`              | ✅ 完成   | 陆凤敏   |
 | SoC 顶层集成      | `rtl/top/soc_top.v`              | ✅ 完成   | 阿呆不呆 |
 | 全芯片 Testbench  | `sim/tb/tb_soc_top.v`            | ✅ 完成   | 阿呆不呆 |
-| 数字基带          | `rtl/baseband/bb_top.v`          | ⚠️ 存根 | 林子轩   |
-| AES-128           | `rtl/aes/aes_top.v`              | ⚠️ 存根 | 梁芷晴   |
-| EEPROM 控制器     | `rtl/eeprom/eep_top.v`           | ⚠️ 存根 | 何展韬   |
+| 数字基带          | `rtl/baseband/bb_top.v`          | ✅ v1.0  | 阿呆不呆 |
+| AES-128           | `rtl/aes/aes_top.v`              | ✅ v1.0  | 阿呆不呆 |
+| EEPROM 控制器     | `rtl/eeprom/eep_top.v`           | ✅ v1.0  | 阿呆不呆 |
 | Memory Map        | `doc/memory_map.md`              | ✅ v1.0  | 何展韬   |
 | 接口规范          | `doc/interface_spec.md`          | ✅ v1.0  | 何展韬   |
 | 芯片 Spec         | `doc/`                           | ✅ 完成  | 何展韬   |

@@ -208,6 +208,106 @@ void main(void) {
     if (*aes_remap == 0xA0000000) PASS(); else FAIL();
 
     // ================================================================
+    // 11. AES-128 加密功能测试 (FIPS-197 标准测试向量)
+    // ================================================================
+    #define AES_STATUS      (*(volatile uint32_t*)(AES_BASE + 0x04))
+    #define AES_DIN0        (*(volatile uint32_t*)(AES_BASE + 0x18))
+    #define AES_DIN1        (*(volatile uint32_t*)(AES_BASE + 0x1C))
+    #define AES_DIN2        (*(volatile uint32_t*)(AES_BASE + 0x20))
+    #define AES_DIN3        (*(volatile uint32_t*)(AES_BASE + 0x24))
+    #define AES_DOUT0       (*(volatile uint32_t*)(AES_BASE + 0x28))
+    #define AES_DOUT1       (*(volatile uint32_t*)(AES_BASE + 0x2C))
+    #define AES_DOUT2       (*(volatile uint32_t*)(AES_BASE + 0x30))
+    #define AES_DOUT3       (*(volatile uint32_t*)(AES_BASE + 0x34))
+
+    // 设置密钥 (FIPS-197 Appendix B)
+    AES_KEY0 = 0x2b7e1516;
+    AES_KEY1 = 0x28aed2a6;
+    AES_KEY2 = 0xabf71588;
+    AES_KEY3 = 0x09cf4f3c;
+
+    // 设置明文
+    AES_DIN0 = 0x6bc1bee2;
+    AES_DIN1 = 0x2e409f96;
+    AES_DIN2 = 0xe93d7e11;
+    AES_DIN3 = 0x7393172a;
+
+    // 启动加密 (bit31=START, bit0=ENCRYPT)
+    AES_CTRL = 0x80000001;
+
+    // 轮询等待完成 (最多等 1000 次)
+    volatile int timeout = 1000;
+    while ((AES_STATUS & 0x1) && timeout > 0) timeout--;  // BUSY
+    while (!(AES_STATUS & 0x2) && timeout > 0) timeout--;  // DONE
+
+    // 验证密文: 预期 3ad77bb4 0d7a3660 a89ecaf3 2466ef97
+    if (AES_DOUT0 == 0x3ad77bb4) PASS(); else FAIL();
+    if (AES_DOUT1 == 0x0d7a3660) PASS(); else FAIL();
+    if (AES_DOUT2 == 0xa89ecaf3) PASS(); else FAIL();
+    if (AES_DOUT3 == 0x2466ef97) PASS(); else FAIL();
+
+    // ================================================================
+    // 12. AES-128 解密功能测试
+    // ================================================================
+    // 输入密文
+    AES_DIN0 = 0x3ad77bb4;
+    AES_DIN1 = 0x0d7a3660;
+    AES_DIN2 = 0xa89ecaf3;
+    AES_DIN3 = 0x2466ef97;
+
+    // 启动解密 (bit31=START, bit1=DECRYPT)
+    AES_CTRL = 0x80000002;
+
+    timeout = 1000;
+    while ((AES_STATUS & 0x1) && timeout > 0) timeout--;
+    while (!(AES_STATUS & 0x2) && timeout > 0) timeout--;
+
+    // 验证明文恢复
+    if (AES_DOUT0 == 0x6bc1bee2) PASS(); else FAIL();
+    if (AES_DOUT1 == 0x2e409f96) PASS(); else FAIL();
+    if (AES_DOUT2 == 0xe93d7e11) PASS(); else FAIL();
+    if (AES_DOUT3 == 0x7393172a) PASS(); else FAIL();
+
+    // ================================================================
+    // 13. 基带 FIFO 功能测试
+    // ================================================================
+    #define BB_FIFO_STATUS  (*(volatile uint32_t*)(BB_BASE + 0x10))
+
+    // 写 TX 数据到基带 FIFO
+    BB_TX_DATA = 0x000000A5;
+    BB_TX_DATA = 0x0000005A;
+    BB_TX_DATA = 0x000000FF;
+
+    // 验证 FIFO 非空
+    uint32_t fifo_st = BB_FIFO_STATUS;
+    if (!(fifo_st & 0x20000)) PASS(); else FAIL();  // TX_FIFO 不空
+
+    // 启动基带发送 (bit1=TX_START)
+    BB_CTRL = 0x00000002;
+
+    // 等待发送完成
+    timeout = 1000;
+    while (!(BB_STATUS & 0x2) && timeout > 0) timeout--;
+    if (BB_STATUS & 0x2) PASS(); else FAIL();  // TX_DONE
+
+    // ================================================================
+    // 14. EEPROM 控制寄存器测试
+    // ================================================================
+    #define EEP_STATUS      (*(volatile uint32_t*)(EEP_BASE + 0x04))
+
+    // 设置 I2C 分频 (13.56MHz / (67+1)*2 ≈ 100kHz)
+    volatile uint32_t *eep_div = (uint32_t*)(EEP_BASE + 0x14);
+    *eep_div = 0x00000043;  // DIV=67
+
+    // 配置设备地址 + 存储地址
+    EEP_ADDR = 0xA0000000 | 0x00000100;
+    EEP_WDATA = 0x00000042;
+
+    // 验证寄存器写读
+    if (EEP_ADDR == (0xA0000000 | 0x00000100)) PASS(); else FAIL();
+    if (EEP_WDATA == 0x00000042) PASS(); else FAIL();
+
+    // ================================================================
     // 完成 — 写成功标志
     // ================================================================
     if (*test_result == RESULT_PASS) {
