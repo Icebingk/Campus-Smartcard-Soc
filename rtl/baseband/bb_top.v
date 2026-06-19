@@ -114,19 +114,21 @@ module bb_top (
     always @(posedge pclk or negedge presetn) begin
         if (!presetn) begin
             tx_wr_ptr <= 3'd0; tx_rd_ptr <= 3'd0; tx_count <= 4'd0;
-        end else if (regfile[0][31]) begin  // SOFT_RESET
-            tx_wr_ptr <= 3'd0; tx_rd_ptr <= 3'd0; tx_count <= 4'd0;
         end else begin
-            // APB 写 TX_DATA → push FIFO
-            if (apb_write && reg_addr==3'd2 && !tx_fifo_full) begin
-                tx_fifo[tx_wr_ptr] <= pwdata[7:0];
-                tx_wr_ptr <= tx_wr_ptr + 3'd1;
-                tx_count  <= tx_count + 4'd1;
-            end
-            // TX 状态机读 FIFO → pop
-            if (tx_pop) begin
-                tx_rd_ptr <= tx_rd_ptr + 3'd1;
-                tx_count  <= tx_count - 4'd1;
+            if (regfile[0][31]) begin
+                tx_wr_ptr <= 3'd0; tx_rd_ptr <= 3'd0; tx_count <= 4'd0;
+            end else begin
+                // APB 写 TX_DATA → push FIFO
+                if (apb_write && reg_addr==3'd2 && !tx_fifo_full) begin
+                    tx_fifo[tx_wr_ptr] <= pwdata[7:0];
+                    tx_wr_ptr <= tx_wr_ptr + 3'd1;
+                    tx_count  <= tx_count + 4'd1;
+                end
+                // TX 状态机读 FIFO → pop
+                if (tx_pop) begin
+                    tx_rd_ptr <= tx_rd_ptr + 3'd1;
+                    tx_count  <= tx_count - 4'd1;
+                end
             end
         end
     end
@@ -147,21 +149,20 @@ module bb_top (
     always @(posedge pclk or negedge presetn) begin
         if (!presetn) begin
             rx_wr_ptr <= 3'd0; rx_rd_ptr <= 3'd0; rx_count <= 4'd0;
-        end else if (regfile[0][31]) begin
-            rx_wr_ptr <= 3'd0; rx_rd_ptr <= 3'd0; rx_count <= 4'd0;
         end else begin
-            // 解码器写 RX FIFO
-            if (rx_byte_valid && !rx_fifo_full) begin
-                rx_fifo[rx_wr_ptr] <= rx_byte;
-                rx_wr_ptr <= rx_wr_ptr + 3'd1;
-                rx_count  <= rx_count + 4'd1;
+            if (regfile[0][31]) begin
+                rx_wr_ptr <= 3'd0; rx_rd_ptr <= 3'd0; rx_count <= 4'd0;
+            end else begin
+                if (rx_byte_valid && !rx_fifo_full) begin
+                    rx_fifo[rx_wr_ptr] <= rx_byte;
+                    rx_wr_ptr <= rx_wr_ptr + 3'd1;
+                    rx_count  <= rx_count + 4'd1;
+                end
+                if (apb_write && reg_addr==3'd3 && !rx_fifo_empty) begin
+                    rx_rd_ptr <= rx_rd_ptr + 3'd1;
+                    rx_count  <= rx_count - 4'd1;
+                end
             end
-            // APB 读 RX_DATA → pop FIFO
-            if (apb_write && reg_addr==3'd3 && !rx_fifo_empty) begin
-                rx_rd_ptr <= rx_rd_ptr + 3'd1;
-                rx_count  <= rx_count - 4'd1;
-            end
-            // 读操作自动更新 RDATA
         end
     end
 
@@ -517,6 +518,7 @@ module bb_top (
             // ─── STATUS ───
             regfile[1][0] <= (tx_state != TX_IDLE) || (rx_state != RX_IDLE);
             regfile[1][7] <= rf_rx || (tx_state != TX_IDLE);
+            regfile[1][6:4] <= ac_state;  // 防冲突状态 (避免优化掉)
 
             // TX_DONE
             if (tx_state == TX_EOF && etu_tick) begin

@@ -59,7 +59,7 @@ module eep_top (
 
     always @(*) prdata = (psel && !pwrite) ? regfile[reg_addr] : 32'h0;
     assign pready = 1'b1;
-    assign pslverr = 1'b0;
+    assign pslverr = (psel && penable && (|paddr[11:3]));  // 地址越界检测
 
     // ================================================================
     // I2C 状态机参数 (必须在使用前声明)
