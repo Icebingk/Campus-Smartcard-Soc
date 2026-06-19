@@ -73,14 +73,27 @@ module eep_top (
     assign pslverr = 1'b0;
 
     // ================================================================
+    // I2C 状态机参数 (必须在使用前声明)
+    // ================================================================
+    localparam [3:0]
+        S_IDLE   = 4'd0,
+        S_START  = 4'd1,
+        S_SEND   = 4'd2,
+        S_WAIT   = 4'd3,
+        S_RECV   = 4'd4,
+        S_ACK    = 4'd5,
+        S_STOP1  = 4'd6,
+        S_STOP2  = 4'd7,
+        S_DONE_S = 4'd8;
+
+    reg [3:0] state, nxt;
+
+    // ================================================================
     // I2C 时序参数
     // ================================================================
-    // DIV 控制 SCL 频率: i2c_period = (DIV+1)*2 pclk cycles
-    // 例如: pclk=13.56MHz, DIV=67 → SCL≈100kHz
-    //       pclk=13.56MHz, DIV=16 → SCL≈400kHz
     wire [15:0] div_val = regfile[5][15:0];
     reg [15:0] clk_cnt;
-    wire clk_tick;  // SCL 半周期 tick
+    wire clk_tick;
     assign clk_tick = (clk_cnt == div_val);
 
     always @(posedge pclk or negedge presetn) begin
@@ -89,21 +102,7 @@ module eep_top (
         else if (state != S_IDLE) clk_cnt <= clk_cnt + 16'd1;
     end
 
-    // ================================================================
-    // I2C 状态机
-    // ================================================================
-    localparam [3:0]
-        S_IDLE   = 4'd0,
-        S_START  = 4'd1,
-        S_SEND   = 4'd2,   // 发送字节 (地址+数据)
-        S_WAIT   = 4'd3,   // 等待 ACK
-        S_RECV   = 4'd4,   // 接收字节
-        S_ACK    = 4'd5,   // 发送 ACK/NACK
-        S_STOP1  = 4'd6,   // STOP 第一阶段
-        S_STOP2  = 4'd7,   // STOP 第二阶段
-        S_DONE_S = 4'd8;
-
-    reg [3:0] state, nxt;
+    // ─── 其余状态机寄存器 ───
     reg [3:0] bit_cnt;       // 当前字节剩余 bit (0..8)
     reg [7:0] shift_reg;     // 移位寄存器
     reg [2:0] phase;         // 操作阶段: 0=设备地址, 1=存储地址, 2=数据

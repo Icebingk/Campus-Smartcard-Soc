@@ -87,6 +87,30 @@ module bb_top (
     assign pslverr = 1'b0;
 
     // ================================================================
+    // 前向声明: 状态机参数和关键互连信号 (必须在所有使用前声明)
+    // ================================================================
+
+    // ─── TX 状态机声明 ───
+    localparam [2:0] TX_IDLE  = 3'd0;
+    localparam [2:0] TX_SOF   = 3'd1;
+    localparam [2:0] TX_DATA  = 3'd2;
+    localparam [2:0] TX_PARITY = 3'd3;
+    localparam [2:0] TX_EOF   = 3'd4;
+    localparam [2:0] TX_WAIT  = 3'd5;
+    reg [2:0] tx_state, tx_next;
+    reg       tx_pop;         // TX FSM → FIFO: 弹出信号
+
+    // ─── RX 状态机声明 ───
+    localparam [2:0] RX_IDLE  = 3'd0;
+    localparam [2:0] RX_SOF   = 3'd1;
+    localparam [2:0] RX_DATA  = 3'd2;
+    localparam [2:0] RX_PARITY = 3'd3;
+    localparam [2:0] RX_EOF   = 3'd4;
+    reg [2:0] rx_state, rx_next;
+    wire      rx_byte_valid;  // RX FSM → FIFO: 字节有效
+    wire [7:0] rx_byte;       // RX FSM → FIFO: 接收字节
+
+    // ================================================================
     // TX FIFO (8 字节)
     // ================================================================
     reg [7:0] tx_fifo [0:7];
@@ -213,19 +237,11 @@ module bb_top (
     //   bit 1: 01 (low→high)
     //   bit 0: 10 (high→low)
 
-    localparam [2:0] TX_IDLE  = 3'd0;
-    localparam [2:0] TX_SOF   = 3'd1;  // Start of Frame
-    localparam [2:0] TX_DATA  = 3'd2;  // 发送数据位
-    localparam [2:0] TX_PARITY = 3'd3; // 发送奇偶位
-    localparam [2:0] TX_EOF   = 3'd4;  // End of Frame
-    localparam [2:0] TX_WAIT  = 3'd5;
-
-    reg [2:0] tx_state, tx_next;
-    reg [3:0] tx_bit_cnt;       // 0..7 (8 data bits)
+    // ─── TX 状态机其余寄存器 ───
+    reg [3:0] tx_bit_cnt;
     reg [7:0] tx_shift;
-    reg       tx_parity;        // 奇校验
-    reg       tx_pop;
-    reg       tx_half;          // 当前 ETU 的前半/后半
+    reg       tx_parity;
+    reg       tx_half;
 
     always @(posedge pclk or negedge presetn)
         if (!presetn) tx_state <= TX_IDLE; else tx_state <= tx_next;
@@ -343,24 +359,16 @@ module bb_top (
     // ================================================================
     // 曼彻斯特解码器 (PICC→PCD, Type A uses Manchester for 106kbps)
     // ================================================================
-    // 简化的曼彻斯特解码:
-    //   检测副载波边沿 → 提取时钟 → 采样数据
-    //   每个 ETU 内采样中点判断 bit 值
 
-    localparam [2:0] RX_IDLE  = 3'd0;
-    localparam [2:0] RX_SOF   = 3'd1;   // 等待 SOF
-    localparam [2:0] RX_DATA  = 3'd2;   // 接收数据位
-    localparam [2:0] RX_PARITY = 3'd3;  // 接收奇偶位
-    localparam [2:0] RX_EOF   = 3'd4;   // 等待 EOF
-
-    reg [2:0] rx_state, rx_next;
+    // ─── RX 状态机其余寄存器 ───
     reg [3:0] rx_bit_cnt;
     reg [7:0] rx_shift;
     reg       rx_parity;
     reg       rx_half;
-    reg       rx_sample;       // 采样值
-    reg       rf_rx_d1, rf_rx_d2;  // 同步寄存器
-    wire      rx_edge;         // 副载波边沿检测
+    reg       rx_sample;
+    reg       rf_rx_d1, rf_rx_d2;
+    wire      rx_edge;
+    assign    rx_edge = rf_rx_d1 ^ rf_rx_d2;
 
     always @(posedge pclk) begin
         rf_rx_d1 <= rf_rx;
@@ -386,8 +394,6 @@ module bb_top (
         endcase
     end
 
-    wire rx_byte_valid;
-    wire [7:0] rx_byte;
     assign rx_byte = rx_shift;
     assign rx_byte_valid = (rx_state == RX_EOF && etu_tick);
 
