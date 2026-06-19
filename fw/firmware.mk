@@ -22,6 +22,7 @@ ABI       = ilp32e
 CFLAGS    = -march=$(ARCH) -mabi=$(ABI) \
             -Os -nostdlib -nostartfiles -ffreestanding \
             -Wall -Wno-unused -fno-builtin \
+            -fno-delete-null-pointer-checks \
             -T linker.ld
 
 LDFLAGS   = -march=$(ARCH) -mabi=$(ABI) \

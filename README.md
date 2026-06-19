@@ -2,8 +2,8 @@
 
 > **项目**: 基于 SoC 的校园智能卡主芯片设计
 > **工艺**: 数字 ASIC 正向设计全流程 (RTL → GDSII)
-> **最后更新**: 2026-06-19
-> **当前阶段**: Phase 4 — 三大核心模块 RTL 完成 + AES 功能验证 ✅
+> **最后更新**: 2026-06-20
+> **当前阶段**: Phase 4 — 三大核心模块 RTL 完成 + 仿真 70 项全通过 + 综合通过 ✅
 
 ---
 
@@ -140,7 +140,39 @@ vsim -c -do sim_top.do
 
 ---
 
-## 4. 团队分工
+## 4. 综合结果 (Vivado 2022.2, Artix-7 xc7a35tcsg324-1)
+
+| 指标 | 值 |
+|------|-----|
+| **Target** | Artix-7 xc7a35tcsg324-1 (FPGA Prototype) |
+| **Clock** | 13.56 MHz (period 73.746 ns) |
+| **WNS** | +27.646 ns ✅ |
+| **TNS** | 0.000 ns ✅ |
+| **Failing Endpoints** | 0 ✅ |
+
+### 资源利用率
+
+| 资源 | 用量 | 可用 | 利用率 |
+|------|------|------|--------|
+| **LUT** (LUT4+LUT6+LUT5+LUT3+LUT2+LUT1) | 3,855 | 20,800 | **18.5%** |
+| **FF** (FDCE+FDRE+FDSE+FDPE) | 1,625 | 41,600 | **3.9%** |
+| **Distributed RAM** (RAMS64E+RAMD32+RAMS32) | 1,112 | — | — |
+| **Carry Chain** (CARRY4) | 71 | — | — |
+| **BUFG** | 1 | 32 | 3.1% |
+| **IO** | 6 | 210 | 2.9% |
+
+### 功耗估算
+
+| 项目 | 值 |
+|------|-----|
+| **Total On-Chip Power** | 77 mW |
+| Dynamic Power | 6 mW |
+| Static Power | 70 mW |
+| Junction Temp | 25.4°C |
+
+---
+
+## 5. 团队分工
 
 | 成员               | 角色         | 核心任务                              |
 | ------------------ | ------------ | ------------------------------------- |
@@ -152,9 +184,9 @@ vsim -c -do sim_top.do
 
 ---
 
-## 5. 给模块开发者的接口规范
+## 6. 给模块开发者的接口规范
 
-### 5.1 APB 从机必选端口
+### 6.1 APB 从机必选端口
 
 ```verilog
 module your_module (
@@ -172,7 +204,7 @@ module your_module (
 );
 ```
 
-### 5.2 注意事项
+### 6.2 注意事项
 
 - **地址偏移**: 严格遵循 [`memory_map.md`](doc/memory_map.md)
 - **写时序**: 建议 `negedge pclk` 采样 `psel && penable && pwrite`
@@ -181,7 +213,7 @@ module your_module (
 
 ---
 
-## 6. 时间节点
+## 7. 时间节点
 
 | 日期      | 事项                       | 状态            |
 | --------- | -------------------------- | --------------- |
@@ -198,9 +230,9 @@ module your_module (
 
 ---
 
-## 7. 团队协作指南
+## 8. 团队协作指南
 
-### 7.1 克隆仓库
+### 8.1 克隆仓库
 
 **方式一：SSH（推荐，无需反复输密码）**
 
@@ -216,7 +248,7 @@ git clone https://github.com/Icebingk/Campus-Smartcard-Soc.git
 cd Campus-Smartcard-Soc
 ```
 
-### 7.2 配置 SSH Key（仅首次，一次性）
+### 8.2 配置 SSH Key（仅首次，一次性）
 
 打开终端（Git Bash 或 PowerShell），生成 SSH 密钥：
 
@@ -246,7 +278,7 @@ ssh -T git@github.com
 # 预期输出: Hi Icebingk! You've successfully authenticated...
 ```
 
-### 7.3 分支策略
+### 8.3 分支策略
 
 ```
 master（主分支）—— 始终保持稳定、可综合、仿真通过
@@ -262,7 +294,7 @@ master（主分支）—— 始终保持稳定、可综合、仿真通过
 - 每人从 master 拉自己的功能分支开发
 - 模块验证通过后，提 Pull Request 合并回 master
 
-### 7.4 日常协作流程
+### 8.4 日常协作流程
 
 **① 首次：克隆仓库**
 
@@ -315,7 +347,7 @@ git merge master
 4. 点击 **Create pull request**，填写说明
 5. 通知阿呆不呆 Review 并合并
 
-### 7.5 提交信息规范
+### 8.5 提交信息规范
 
 遵循约定式提交格式：
 
@@ -328,7 +360,7 @@ git merge master
 | `sim:`      | 仿真/测试相关    | `sim: 新增基带寄存器读写测试用例` |
 | `syn:`      | 综合相关         | `syn: 更新时序约束 13.56MHz`      |
 
-### 7.6 注意事项
+### 8.6 注意事项
 
 - `sim/scripts/work/`、`syn/vivado/`、`syn/outputs/` 等临时文件已加入 `.gitignore`，不会被提交
 - 仿真波形文件（`.wlf`、`.vcd`）不要提交，体积太大
