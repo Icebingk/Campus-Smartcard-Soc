@@ -4,7 +4,7 @@
 # ================================================================
 
 set project_name    "smart_card_soc"
-set project_dir     "../vivado"
+set project_dir     "../vivado/[clock format [clock seconds] -format %Y%m%d_%H%M%S]"
 set rtl_dir         "../../rtl"
 set part            "xc7a35tcsg324-1"
 set out_dir         "../outputs"
@@ -12,9 +12,6 @@ set out_dir         "../outputs"
 # ================================================================
 # 1. Create Project
 # ================================================================
-if {[file exists $project_dir/$project_name]} {
-    file delete -force $project_dir/$project_name
-}
 create_project -force $project_name $project_dir -part $part
 set_property target_language Verilog [current_project]
 puts "\[FLOW\] Project created: $part"

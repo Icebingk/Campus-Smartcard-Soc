@@ -96,8 +96,6 @@ module bb_top (
     localparam [2:0] RX_PARITY = 3'd3;
     localparam [2:0] RX_EOF   = 3'd4;
     reg [2:0] rx_state, rx_next;
-    reg       rx_frame_err;   // RX FSM → regfile: 帧错误触发
-    reg       rx_done;        // RX FSM → regfile: 接收完成触发
     wire      rx_byte_valid;  // RX FSM → FIFO: 字节有效
     wire [7:0] rx_byte;       // RX FSM → FIFO: 接收字节
 
@@ -389,14 +387,8 @@ module bb_top (
                 end
                 RX_PARITY: begin
                     if (!rx_half) rx_sample <= rf_rx_d2;
-                    else begin
-                        // 验证奇偶 (触发信号, 由统一 block 写 regfile)
-                        if ((rx_sample && !rf_rx_d2) != rx_parity)
-                            rx_frame_err <= 1'b1;
-                    end
                 end
                 RX_EOF: begin
-                    rx_done <= 1'b1;
                 end
                 default: ;
             endcase
@@ -524,16 +516,14 @@ module bb_top (
             end else if (tx_state == TX_IDLE)
                 regfile[1][1] <= 1'b0;
 
-            // RX_DONE / FRAME_ERR
-            if (rx_done) begin
+            // RX_DONE / FRAME_ERR (直接检测 RX 状态机)
+            if (rx_state == RX_EOF && etu_tick) begin
                 regfile[1][2] <= 1'b1;
                 if (regfile[5][1]) regfile[6][1] <= 1'b1;
-                rx_done <= 1'b0;
             end
-            if (rx_frame_err) begin
-                regfile[1][5] <= 1'b1;
-                rx_frame_err <= 1'b0;
-            end
+            if (rx_state == RX_PARITY && etu_tick && rx_half)
+                if ((rx_sample && !rf_rx_d2) != rx_parity)
+                    regfile[1][5] <= 1'b1;
         end
     end
 
