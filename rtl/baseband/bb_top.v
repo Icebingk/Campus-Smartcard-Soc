@@ -169,13 +169,6 @@ module bb_top (
     wire [7:0] rx_data_out;
     assign rx_data_out = rx_fifo[rx_rd_ptr];
 
-    // 读 RX_DATA 时展示队首字节
-    always @(posedge pclk or negedge presetn) begin
-        if (!presetn) ;
-        else if (psel && !pwrite && reg_addr==3'd3)
-            regfile[3] <= rx_fifo_empty ? 32'h0 : {24'h0, rx_data_out};
-    end
-
     // ================================================================
     // 波特率 / ETU 定时器
     // ================================================================
@@ -506,6 +499,10 @@ module bb_top (
                     default: ;
                 endcase
             end
+
+            // ─── RX_DATA 读更新 (展示队首字节) ───
+            if (psel && !pwrite && reg_addr==3'd3)
+                regfile[3] <= rx_fifo_empty ? 32'h0 : {24'h0, rx_data_out};
 
             // ─── FIFO 状态 ───
             regfile[4][7:0]   <= {4'd0, tx_count};
