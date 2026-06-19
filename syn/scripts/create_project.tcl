@@ -77,7 +77,8 @@ update_compile_order -fileset sources_1
 # ================================================================
 
 add_files -fileset constrs_1 -norecurse ../constraints/soc_timing.xdc
-puts "\[VIVADO\] Constraints: soc_timing.xdc (clk_sys = 13.56 MHz)"
+add_files -fileset constrs_1 -norecurse ../constraints/soc_pins.xdc
+puts "\[VIVADO\] Constraints: soc_timing.xdc + soc_pins.xdc"
 
 # ================================================================
 # 6. Done

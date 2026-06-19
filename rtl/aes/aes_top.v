@@ -50,17 +50,6 @@ module aes_top (
     // 0x30 DOUT2  0x34 DOUT3   0x38 INT_EN 0x3C INT_STATUS
 
     reg [31:0] regfile [0:NUM_REGS-1];
-    integer i;
-    always @(negedge pclk or negedge presetn) begin
-        if (!presetn) begin
-            for (i = 0; i < NUM_REGS; i = i + 1) regfile[i] <= 32'h0;
-        end else if (apb_write) begin
-            if (reg_addr != 4'h1 && !(reg_addr >= 4'hA && reg_addr <= 4'hD))
-                regfile[reg_addr] <= pwdata;
-            if (reg_addr == 4'hF)
-                regfile[4'hF] <= regfile[4'hF] & ~pwdata;  // W1C
-        end
-    end
 
     always @(*) begin
         prdata = (psel && !pwrite) ? regfile[reg_addr] : 32'h0;
@@ -382,33 +371,48 @@ module aes_top (
         else if (state==S_RUN)
             st <= (round==9) ? fark : ark;
 
-    // 结果写入
-    always @(posedge pclk or negedge presetn)
-        if (!presetn) ;
-        else if (state==S_DONE) begin
-            regfile[10] <= st[127:96]; regfile[11] <= st[95:64];
-            regfile[12] <= st[63:32];  regfile[13] <= st[31:0];
-        end
-
-    // STATUS 更新
-    always @(posedge pclk or negedge presetn)
-        if (!presetn) ;
-        else begin
-            regfile[1][0] <= (state != S_IDLE);  // BUSY
-            if (state==S_DONE) begin
-                regfile[1][1] <= 1'b1;            // DONE
-                regfile[0][31] <= 1'b0;           // clear START
-            end else if (state==S_IDLE && start)
-                regfile[1][1] <= 1'b0;
-        end
-
-    // 中断
+    // 中断输出
     always @(posedge pclk or negedge presetn)
         if (!presetn) irq_o <= 0;
         else begin
-            if (state==S_DONE && regfile[14][0]) begin
-                irq_o <= 1'b1; regfile[15][0] <= 1'b1;
-            end else if (!regfile[14][0]) irq_o <= 1'b0;
+            if (state==S_DONE && regfile[14][0]) irq_o <= 1'b1;
+            else if (!regfile[14][0]) irq_o <= 1'b0;
         end
+
+    // ================================================================
+    // 统一 regfile 写入 (单 always, 避免多驱动, 放末尾确保信号已声明)
+    // ================================================================
+    integer ri;
+    always @(posedge pclk or negedge presetn) begin
+        if (!presetn) begin
+            for (ri = 0; ri < NUM_REGS; ri = ri + 1) regfile[ri] <= 32'h0;
+        end else begin
+            // ─── APB 写入 (CPU 侧) ───
+            if (apb_write) begin
+                case (reg_addr)
+                    4'h0: regfile[0] <= pwdata;                          // CTRL
+                    4'h2,4'h3,4'h4,4'h5: regfile[reg_addr] <= pwdata;   // KEY
+                    4'h6,4'h7,4'h8,4'h9: regfile[reg_addr] <= pwdata;   // DIN
+                    4'hE: regfile[14] <= pwdata;                         // INT_EN
+                    4'hF: regfile[15] <= regfile[15] & ~pwdata;          // W1C
+                    default: ;
+                endcase
+            end
+
+            // ─── 内部状态更新 (硬件侧, APB 写后覆盖这些位) ───
+            regfile[1][0] <= (state != S_IDLE);           // BUSY
+            if (state == S_DONE) begin
+                regfile[1][1] <= 1'b1;                    // DONE
+                regfile[0][31] <= 1'b0;                   // clear START
+                regfile[10] <= st[127:96];                // DOUT
+                regfile[11] <= st[95:64];
+                regfile[12] <= st[63:32];
+                regfile[13] <= st[31:0];
+                if (regfile[14][0])
+                    regfile[15][0] <= 1'b1;               // INT_STATUS
+            end else if (state == S_IDLE && regfile[0][31])
+                regfile[1][1] <= 1'b0;
+        end
+    end
 
 endmodule

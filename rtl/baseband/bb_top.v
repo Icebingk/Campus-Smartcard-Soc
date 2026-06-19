@@ -70,17 +70,6 @@ module bb_top (
     //      [15:0]: ETU_DIVIDER  ETU = (DIV+1) * pclk_period
 
     reg [31:0] regfile [0:NUM_REGS-1];
-    integer i;
-    always @(negedge pclk or negedge presetn) begin
-        if (!presetn) begin
-            for (i = 0; i < NUM_REGS; i = i + 1) regfile[i] <= 32'h0;
-        end else if (apb_write) begin
-            if (reg_addr != 3'h1 && reg_addr != 3'h3)  // STATUS, RX_DATA RO
-                regfile[reg_addr] <= pwdata;
-            if (reg_addr == 3'd6)  // INT_STATUS W1C
-                regfile[6] <= regfile[6] & ~pwdata;
-        end
-    end
 
     always @(*) prdata = (psel && !pwrite) ? regfile[reg_addr] : 32'h0;
     assign pready = 1'b1;
@@ -107,6 +96,8 @@ module bb_top (
     localparam [2:0] RX_PARITY = 3'd3;
     localparam [2:0] RX_EOF   = 3'd4;
     reg [2:0] rx_state, rx_next;
+    reg       rx_frame_err;   // RX FSM → regfile: 帧错误触发
+    reg       rx_done;        // RX FSM → regfile: 接收完成触发
     wire      rx_byte_valid;  // RX FSM → FIFO: 字节有效
     wire [7:0] rx_byte;       // RX FSM → FIFO: 接收字节
 
@@ -182,16 +173,6 @@ module bb_top (
         if (!presetn) ;
         else if (psel && !pwrite && reg_addr==3'd3)
             regfile[3] <= rx_fifo_empty ? 32'h0 : {24'h0, rx_data_out};
-    end
-
-    // FIFO 状态更新
-    always @(posedge pclk) begin
-        regfile[4][7:0]   <= {4'd0, tx_count};
-        regfile[4][15:8]  <= {4'd0, rx_count};
-        regfile[4][16]    <= tx_fifo_full;
-        regfile[4][17]    <= tx_fifo_empty;
-        regfile[4][18]    <= rx_fifo_full;
-        regfile[4][19]    <= rx_fifo_empty;
     end
 
     // ================================================================
@@ -339,22 +320,7 @@ module bb_top (
     end
 
     // ─── TX 状态更新 ───
-    always @(posedge pclk or negedge presetn) begin
-        if (!presetn) ;
-        else begin
-            if (tx_state == TX_EOF && etu_tick) begin
-                regfile[1][1] <= 1'b1;  // TX_DONE
-                regfile[1][0] <= 1'b0;
-                if (regfile[0][1]) begin
-                    regfile[6][0] <= 1'b1;  // INT: TX_DONE
-                end
-            end else if (tx_state == TX_IDLE) begin
-                regfile[1][1] <= 1'b0;
-            end
-            if (tx_state == TX_SOF)
-                regfile[1][0] <= 1'b1;  // BUSY
-        end
-    end
+    // ─── TX 完成标志由统一 regfile 块处理 ───
 
     // ================================================================
     // 曼彻斯特解码器 (PICC→PCD, Type A uses Manchester for 106kbps)
@@ -430,14 +396,13 @@ module bb_top (
                 RX_PARITY: begin
                     if (!rx_half) rx_sample <= rf_rx_d2;
                     else begin
-                        // 验证奇偶
+                        // 验证奇偶 (触发信号, 由统一 block 写 regfile)
                         if ((rx_sample && !rf_rx_d2) != rx_parity)
-                            regfile[1][5] <= 1'b1;  // FRAME_ERR
+                            rx_frame_err <= 1'b1;
                     end
                 end
                 RX_EOF: begin
-                    regfile[1][2] <= 1'b1;  // RX_DONE
-                    if (regfile[5][1]) regfile[6][1] <= 1'b1;  // INT: RX_DONE
+                    rx_done <= 1'b1;
                 end
                 default: ;
             endcase
@@ -508,18 +473,6 @@ module bb_top (
         end
     end
 
-    // 射频场检测
-    always @(posedge pclk) begin
-        regfile[1][7] <= rf_rx || (tx_state != TX_IDLE);  // FIELD_ON
-    end
-
-    // ================================================================
-    // 全局 BUSY 标志
-    // ================================================================
-    always @(posedge pclk) begin
-        regfile[1][0] <= (tx_state != TX_IDLE) || (rx_state != RX_IDLE);
-    end
-
     // ================================================================
     // 中断生成
     // ================================================================
@@ -530,6 +483,58 @@ module bb_top (
                 irq_o <= 1'b1;
             else
                 irq_o <= 1'b0;
+        end
+    end
+
+    // ================================================================
+    // 统一 regfile 写入 (单 always, 放末尾确保所有信号已声明)
+    // ================================================================
+    integer bi;
+    always @(posedge pclk or negedge presetn) begin
+        if (!presetn) begin
+            for (bi = 0; bi < NUM_REGS; bi = bi + 1) regfile[bi] <= 32'h0;
+        end else begin
+            // ─── APB 写入 ───
+            if (apb_write) begin
+                case (reg_addr)
+                    3'd0: regfile[0] <= pwdata;
+                    3'd2: regfile[2] <= pwdata;
+                    3'd5: regfile[5] <= pwdata;
+                    3'd6: regfile[6] <= regfile[6] & ~pwdata;
+                    3'd7: regfile[7] <= pwdata;
+                    default: ;
+                endcase
+            end
+
+            // ─── FIFO 状态 ───
+            regfile[4][7:0]   <= {4'd0, tx_count};
+            regfile[4][15:8]  <= {4'd0, rx_count};
+            regfile[4][16]    <= tx_fifo_full;
+            regfile[4][17]    <= tx_fifo_empty;
+            regfile[4][18]    <= rx_fifo_full;
+            regfile[4][19]    <= rx_fifo_empty;
+
+            // ─── STATUS ───
+            regfile[1][0] <= (tx_state != TX_IDLE) || (rx_state != RX_IDLE);
+            regfile[1][7] <= rf_rx || (tx_state != TX_IDLE);
+
+            // TX_DONE
+            if (tx_state == TX_EOF && etu_tick) begin
+                regfile[1][1] <= 1'b1;
+                if (regfile[5][0]) regfile[6][0] <= 1'b1;
+            end else if (tx_state == TX_IDLE)
+                regfile[1][1] <= 1'b0;
+
+            // RX_DONE / FRAME_ERR
+            if (rx_done) begin
+                regfile[1][2] <= 1'b1;
+                if (regfile[5][1]) regfile[6][1] <= 1'b1;
+                rx_done <= 1'b0;
+            end
+            if (rx_frame_err) begin
+                regfile[1][5] <= 1'b1;
+                rx_frame_err <= 1'b0;
+            end
         end
     end
 

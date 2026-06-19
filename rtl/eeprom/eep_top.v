@@ -56,17 +56,6 @@ module eep_top (
     // 0x1C: EEP_INT_STATUS 中断状态 (W1C)
 
     reg [31:0] regfile [0:NUM_REGS-1];
-    integer i;
-    always @(negedge pclk or negedge presetn) begin
-        if (!presetn) begin
-            for (i = 0; i < NUM_REGS; i = i + 1) regfile[i] <= 32'h0;
-        end else if (apb_write) begin
-            if (reg_addr != 3'h4 && reg_addr != 3'h1)  // STATUS & RDATA RO
-                regfile[reg_addr] <= pwdata;
-            if (reg_addr == 3'h7)  // INT_STATUS W1C
-                regfile[7] <= regfile[7] & ~pwdata;
-        end
-    end
 
     always @(*) prdata = (psel && !pwrite) ? regfile[reg_addr] : 32'h0;
     assign pready = 1'b1;
@@ -275,50 +264,50 @@ module eep_top (
         end
     end
 
-    // ─── 读数据锁存 (在 RECV 最后一位采样后) ───
-    always @(posedge pclk or negedge presetn) begin
-        if (!presetn) ;
-        else if (state==S_RECV && clk_tick && bit_cnt==4'd7)
-            regfile[4] <= {24'h0, shift_reg[6:0], i2c_sda};  // RDATA
-    end
-
-    // ─── 状态寄存器更新 ───
-    always @(posedge pclk or negedge presetn) begin
-        if (!presetn) ;
-        else begin
-            regfile[1][0] <= (state != S_IDLE);  // BUSY
-            if (state==S_DONE_S) begin
-                regfile[1][1] <= 1'b1;             // DONE
-                regfile[0][31] <= 1'b0;            // clear START
-            end else if (state==S_IDLE && regfile[0][31])
-                regfile[1][1] <= 1'b0;
-        end
-    end
-
-    // ─── 错误检测: NACK ───
-    reg nack_detected;
-    always @(posedge pclk or negedge presetn) begin
-        if (!presetn) nack_detected <= 1'b0;
-        else if (state==S_WAIT && clk_tick && i2c_sda==1'b1)
-            nack_detected <= 1'b1;
-        else if (state==S_IDLE)
-            nack_detected <= 1'b0;
-    end
-
-    always @(posedge pclk) begin
-        if (state==S_WAIT && clk_tick && i2c_sda==1'b1)
-            regfile[1][3] <= 1'b1;  // NACK flag
-    end
-
     // ================================================================
     // 中断生成
     // ================================================================
     always @(posedge pclk or negedge presetn) begin
         if (!presetn) irq_o <= 1'b0;
         else begin
-            if (state==S_DONE_S && regfile[6][0]) begin
-                irq_o <= 1'b1; regfile[7][0] <= 1'b1;
-            end else if (!regfile[6][0]) irq_o <= 1'b0;
+            if (state==S_DONE_S && regfile[6][0]) irq_o <= 1'b1;
+            else if (!regfile[6][0]) irq_o <= 1'b0;
+        end
+    end
+
+    // ================================================================
+    // 统一 regfile 写入 (单 always, 放末尾确保所有信号已声明)
+    // ================================================================
+    integer ei;
+    always @(posedge pclk or negedge presetn) begin
+        if (!presetn) begin
+            for (ei = 0; ei < NUM_REGS; ei = ei + 1) regfile[ei] <= 32'h0;
+        end else begin
+            // ─── APB 写入 ───
+            if (apb_write) begin
+                case (reg_addr)
+                    3'd0: regfile[0] <= pwdata;
+                    3'd2, 3'd3, 3'd5, 3'd6: regfile[reg_addr] <= pwdata;
+                    3'd7: regfile[7] <= regfile[7] & ~pwdata;
+                    default: ;
+                endcase
+            end
+
+            // ─── 内部状态更新 ───
+            regfile[1][0] <= (state != S_IDLE);
+            if (state == S_DONE_S) begin
+                regfile[1][1] <= 1'b1;
+                regfile[0][31] <= 1'b0;
+                if (regfile[6][0])
+                    regfile[7][0] <= 1'b1;
+            end else if (state == S_IDLE && regfile[0][31])
+                regfile[1][1] <= 1'b0;
+
+            if (state == S_WAIT && clk_tick && i2c_sda == 1'b1)
+                regfile[1][3] <= 1'b1;
+
+            if (state == S_RECV && clk_tick && bit_cnt == 4'd7)
+                regfile[4] <= {24'h0, shift_reg[6:0], i2c_sda};
         end
     end
 
