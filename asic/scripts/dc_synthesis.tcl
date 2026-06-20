@@ -7,7 +7,9 @@
 set RTL "../../rtl"
 
 analyze -library WORK -format verilog [list \
-    $RTL/cpu/picorv32.v       \
+    $RTL/mem/rom_model.v       \
+    $RTL/mem/sram_model.v      \
+    $RTL/cpu/picorv32.v        \
     $RTL/cpu/rv32ec_core.v    \
     $RTL/bus/ahb2apb_bridge.v \
     $RTL/bus/ahb_matrix.v     \
