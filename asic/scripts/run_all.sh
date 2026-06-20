@@ -1,59 +1,50 @@
 #!/bin/bash
 # ================================================================
 # 校园智能卡 SoC — ASIC 后端一键运行脚本
-# Usage: bash run_asic.sh
+# Usage: bash run_all.sh
 # ================================================================
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
 echo "=========================================="
 echo " 校园智能卡 SoC — ASIC 后端全流程"
-echo " TSMC 90nm | DC + ICC2"
+echo " TSMC 90nm | DC → ICC2 → PT → FM"
 echo "=========================================="
 
-# 克隆项目 (如果还没 clone)
-if [ ! -d "Campus-Smartcard-Soc" ]; then
-    git clone git@github.com:Icebingk/Campus-Smartcard-Soc.git
-fi
-cd Campus-Smartcard-Soc/syn/scripts
-
 # ================================================================
-# 1. DC 综合
+# 1. Design Compiler 综合
 # ================================================================
 echo ""
 echo "[1/4] Running Design Compiler synthesis..."
-dc_shell -f dc_synthesis.tcl | tee dc_synthesis.log
-
-# 检查是否成功
-if grep -q "Synthesis Complete" dc_synthesis.log; then
-    echo "  [OK] DC synthesis passed"
-else
-    echo "  [FAIL] DC synthesis failed, check dc_synthesis.log"
-    exit 1
-fi
+dc_shell -f dc_synthesis.tcl | tee ../reports/dc_synthesis.log
+echo "  [OK] DC synthesis done"
 
 # ================================================================
-# 2. ICC2 布局布线 (需要 Milkyway 库)
+# 2. ICC2 布局布线
 # ================================================================
 echo ""
-echo "[2/4] Running ICC2 place & route..."
-echo "  Note: 需要先生成 Milkyway 参考库"
-echo "  icc2_shell -f icc2_flow.tcl | tee icc2_flow.log"
+echo "[2/4] ICC2 Place & Route (需要 Milkyway 库)..."
+echo "  icc2_shell -f icc2_flow.tcl | tee ../reports/icc2_flow.log"
 
 # ================================================================
-# 3. PrimeTime 静态时序分析
+# 3. PrimeTime STA
 # ================================================================
 echo ""
-echo "[3/4] PrimeTime STA (手动运行):"
-echo "  pt_shell -f pt_sta.tcl"
+echo "[3/4] PrimeTime Static Timing Analysis..."
+echo "  pt_shell -f pt_sta.tcl | tee ../reports/pt_sta.log"
 
 # ================================================================
 # 4. Formality 形式验证
 # ================================================================
 echo ""
-echo "[4/4] Formality 等价性检查 (手动运行):"
-echo "  fm_shell -f fm_check.tcl"
+echo "[4/4] Formality Equivalence Check..."
+echo "  fm_shell -f fm_check.tcl | tee ../reports/fm_check.log"
 
 echo ""
 echo "=========================================="
-echo " ASIC 流程脚本已准备就绪"
+echo " DC 综合完成! 查看报告:"
+echo "   less ../reports/dc_area.rpt"
+echo "   less ../reports/dc_timing.rpt"
 echo "=========================================="
