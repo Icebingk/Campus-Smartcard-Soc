@@ -58,9 +58,9 @@ module aes_top (
     assign pslverr = 1'b0;
 
     // ================================================================
-    // S-Box & Inv S-Box (256 entries each)
+    // S-Box & Inv S-Box (256 entries each) — 强制分布式 RAM 避免 RAMB18 DRC
     // ================================================================
-    function [7:0] sbox;
+    (* rom_style = "distributed" *) function [7:0] sbox;
         input [7:0] b;
         case (b)
             8'h00: sbox=8'h63; 8'h01: sbox=8'h7c; 8'h02: sbox=8'h77; 8'h03: sbox=8'h7b;
@@ -131,7 +131,7 @@ module aes_top (
         endcase
     endfunction
 
-    function [7:0] inv_sbox;
+    (* rom_style = "distributed" *) function [7:0] inv_sbox;
         input [7:0] b;
         case (b)
             8'h00: inv_sbox=8'h52; 8'h01: inv_sbox=8'h09; 8'h02: inv_sbox=8'h6a; 8'h03: inv_sbox=8'hd5;
