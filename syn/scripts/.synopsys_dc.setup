@@ -1,0 +1,16 @@
+# ================================================================
+# .synopsys_dc.setup — Campus Smartcard SoC (TSMC 90nm)
+# DC 启动时自动加载
+# ================================================================
+
+set TSMC90    "/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys"
+set search_path [list . $TSMC90]
+set target_library   "slow.db"
+set link_library     "* slow.db"
+
+# Physical library (for power/area estimation)
+set physical_library "tsmc090nvtlk_5lm_2thick.pdb"
+set mw_reference_library ""
+
+# Enable DesignWare components
+set synthetic_library [list "dw_foundation.sldb" "standard.sldb"]

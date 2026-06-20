@@ -1,0 +1,167 @@
+[IC@IC Desktop]$ which dc_shell
+/opt/Synopsys/Synplify2015/bin/dc_shell
+[IC@IC Desktop]$ which icc2_shell
+/usr/bin/which: no icc2_shell in (/opt/KeySight/ADS2015/bin:/opt/Concept/Symutils/linux23.x86_64:/opt/Concept/SpiceVision:/opt/Concept/SGvision:/opt/Concept/RTLvision:/opt/Concept/Gatevision:/opt/Mentor/Calibre2015/ixl_cal_2015.4_16.11/bin:/opt/Mentor/Tessent2013//bin:/opt/Mentor/ModelSim/modeltech/linux:/opt/Cadence/INNOVUS15/bin:/opt/Cadence/RC11/bin:/opt/Cadence/Incisive14//tools/bin:/opt/Cadence/MMSIM15/tools/spectre/bin:/opt/Cadence/MMSIM15/tools/dfII/bin:/opt/Cadence/MMSIM15/tools/bin:/opt/Cadence/MMSIM15/bin:/opt/Cadence/IC617/tools/plot/bin:/opt/Cadence/IC617/tools/iccraft/bin:/opt/Cadence/IC617/tools/dracula/bin:/opt/Cadence/IC617/tools/dfII/bin:/opt/Cadence/IC617/tools/bin:/opt/Cadence/IC617/share/bin:/opt/Synopsys/M-2016.12/bin:/opt/Synopsys/FPGA/bin:/opt/Synopsys/SpyGlass2016/SpyGlass-L2016.06/SPYGLASS_HOME/bin:/opt/Synopsys/Verdi2015/bin:/opt/Synopsys/VCS2014/bin:/opt/Synopsys/Synplify2015/bin:/opt/Synopsys/StarRC2015/bin:/opt/Synopsys/PrimeTime2015/bin:/opt/Synopsys/Laker_OA2015/bin:/opt/Synopsys/ICC2/bin:/opt/Synopsys/ICC2016/bin:/opt/Synopsys/Hspice2016/hspice/bin:/opt/Synopsys/O-2018.09-SP2/bin:/opt/Synopsys/Formality2016/bin:/opt/Synopsys/SCL11.11/linux64/bin:/opt/KeySight/ADS2015/bin:/opt/Concept/Symutils/linux23.x86_64:/opt/Concept/SpiceVision:/opt/Concept/SGvision:/opt/Concept/RTLvision:/opt/Concept/Gatevision:/opt/Mentor/Calibre2015/ixl_cal_2015.4_16.11/bin:/opt/Mentor/Tessent2013//bin:/opt/Mentor/ModelSim/modeltech/linux:/opt/Cadence/INNOVUS15/bin:/opt/Cadence/RC11/bin:/opt/Cadence/Incisive14//tools/bin:/opt/Cadence/MMSIM15/tools/spectre/bin:/opt/Cadence/MMSIM15/tools/dfII/bin:/opt/Cadence/MMSIM15/tools/bin:/opt/Cadence/MMSIM15/bin:/opt/Cadence/IC617/tools/plot/bin:/opt/Cadence/IC617/tools/iccraft/bin:/opt/Cadence/IC617/tools/dracula/bin:/opt/Cadence/IC617/tools/dfII/bin:/opt/Cadence/IC617/tools/bin:/opt/Cadence/IC617/share/bin:/opt/Synopsys/M-2016.12/bin:/opt/Synopsys/FPGA/bin:/opt/Synopsys/SpyGlass2016/SpyGlass-L2016.06/SPYGLASS_HOME/bin:/opt/Synopsys/Verdi2015/bin:/opt/Synopsys/VCS2014/bin:/opt/Synopsys/Synplify2015/bin:/opt/Synopsys/StarRC2015/bin:/opt/Synopsys/PrimeTime2015/bin:/opt/Synopsys/Laker_OA2015/bin:/opt/Synopsys/ICC2/bin:/opt/Synopsys/ICC2016/bin:/opt/Synopsys/Hspice2016/hspice/bin:/opt/Synopsys/O-2018.09-SP2/bin:/opt/Synopsys/Formality2016/bin:/opt/Synopsys/SCL11.11/linux64/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/Synopsys/M-2016.12/admin/install/lc/bin:/home/IC/bin:/opt/Synopsys/M-2016.12/admin/install/lc/bin)
+[IC@IC Desktop]$ which design_vision
+/opt/Synopsys/Synplify2015/bin/design_vision
+[IC@IC Desktop]$ find / -name "*.db" -path "*/synopsys/*" 2>/dev/null | head -20
+ 
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhmra_filename.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhdl_filespace.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhdl_filenode.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhmra_fileindex.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhmra_filespace.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhdl_fileindex.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhdl_filename.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/amd64/packages/synopsys/lib/64/vhmra_filenode.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhmra_filename.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhdl_filespace.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhdl_filenode.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhmra_fileindex.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhmra_filespace.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhdl_fileindex.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhdl_filename.db
+/opt/Synopsys/Laker_OA2015/auxx/netlist_parser/cd_textparse/linux/packages/synopsys/lib/vhmra_filenode.db
+^[[3;2~/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys/typical_leakage.db
+/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys/fast_leakage.db
+/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys/fastz.db
+/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys/fast.db
+[IC@IC Desktop]$ 
+[IC@IC Desktop]$ ls /opt/foundry/ 2>/dev/null
+[IC@IC Desktop]$ ls /home/tools/ 2>/dev/null
+[IC@IC Desktop]$ ls /eda/ 2>/dev/null
+[IC@IC Desktop]$ ls /opt/foundry/ 2>/dev/null
+[IC@IC Desktop]$ ls /home/tools/ 2>/dev/null
+[IC@IC Desktop]$ ls /eda/ 2>/dev/null
+[IC@IC Desktop]$ ls -la /opt/Foundary_Library/TSMC90/
+total 28
+drwxr-xr-x. 7  500 root  4096 May 11  2016 .
+drwxr-xr-x. 4 root root  4096 Apr  1  2017 ..
+drwxrwxr-x. 6  500 root  4096 Nov 22  2005 aci
+drwxr-xr-x. 3  500 users 4096 Jan 13  2005 fe_TSMCHOME_tpdn90g18_130a
+drwxr-xr-x. 3  500 users 4096 Jan 12  2005 fe_TSMCHOME_tpdn90g2_130a
+drwxr-xr-x. 3  500 users 4096 Jan 20  2005 fe_TSMCHOME_tpdn90g3_130a
+drwxr-xr-x. 2 root root  4096 May 11  2016 license
+[IC@IC Desktop]$ ls -la /opt/Foundary_Library/TSMC90/aci/
+total 24
+drwxrwxr-x.  6 500 root 4096 Nov 22  2005 .
+drwxr-xr-x.  7 500 root 4096 May 11  2016 ..
+drwxrwxr-x.  5 500 dip  4096 Oct  8  2004 fuse
+drwxrwxr-x.  5 500 dip  4096 Dec 20  2005 rf_2p_adv
+drwxrwxr-x. 16 500 root 4096 Apr 18  2006 sc-x
+drwxrwxr-x.  5 500 dip  4096 Nov 22  2005 sram_dp_adv
+[IC@IC Desktop]$ ls -la /opt/Foundary_Library/TSMC90/aci/sc-x/synopsys/
+total 142352
+drwxrwxr-x.  2 500 root     4096 May  4  2006 .
+drwxrwxr-x. 16 500 root     4096 Apr 18  2006 ..
+-rw-rw-r--.  1 500 root  7621046 Sep 10  2005 fast.db
+-rw-rw-r--.  1 500 root  1220027 Sep 10  2005 fast_leakage.db
+-rw-rw-r--.  1 500 root  1783766 Sep 10  2005 fast_leakage.lib
+-rw-rw-r--.  1 500 root 16197346 Sep 10  2005 fast.lib
+-rw-rw-r--.  1 500 root  7621048 Sep 10  2005 fastz.db
+-rw-rw-r--.  1 500 root 16204583 Sep 10  2005 fastz.lib
+-rw-rw-rw-.  1 500  500        0 May  4  2006 .lock
+-rw-rw-r--.  1 500 root     3291 Sep 10  2005 README
+-rw-rw-r--.  1 500 root  7621046 Sep 10  2005 slow.db
+-rw-rw-r--.  1 500 root 16122870 Sep 10  2005 slow.lib
+-rw-rw-r--.  1 500 root   969836 Sep 10  2005 tsmc090nvtlk_4lm_1thick.pdb
+-rw-rw-r--.  1 500 root  3061174 Sep 10  2005 tsmc090nvtlk_4lm_1thick.plib
+-rw-rw-r--.  1 500 root   969840 Sep 10  2005 tsmc090nvtlk_4lm_2thick.pdb
+-rw-rw-r--.  1 500 root  3061174 Sep 10  2005 tsmc090nvtlk_4lm_2thick.plib
+-rw-rw-r--.  1 500 root   971250 Sep 10  2005 tsmc090nvtlk_5lm_1thick.pdb
+-rw-rw-r--.  1 500 root  3066884 Sep 10  2005 tsmc090nvtlk_5lm_1thick.plib
+-rw-rw-r--.  1 500 root   971254 Sep 10  2005 tsmc090nvtlk_5lm_2thick.pdb
+-rw-rw-r--.  1 500 root  3066884 Sep 10  2005 tsmc090nvtlk_5lm_2thick.plib
+-rw-rw-r--.  1 500 root   972664 Sep 10  2005 tsmc090nvtlk_6lm_1thick.pdb
+-rw-rw-r--.  1 500 root  3072592 Sep 10  2005 tsmc090nvtlk_6lm_1thick.plib
+-rw-rw-r--.  1 500 root   972668 Sep 10  2005 tsmc090nvtlk_6lm_2thick.pdb
+-rw-rw-r--.  1 500 root  3072592 Sep 10  2005 tsmc090nvtlk_6lm_2thick.plib
+-rw-rw-r--.  1 500 root   974078 Sep 10  2005 tsmc090nvtlk_7lm_1thick.pdb
+-rw-rw-r--.  1 500 root  3078302 Sep 10  2005 tsmc090nvtlk_7lm_1thick.plib
+-rw-rw-r--.  1 500 root   974082 Sep 10  2005 tsmc090nvtlk_7lm_2thick.pdb
+-rw-rw-r--.  1 500 root  3078302 Sep 10  2005 tsmc090nvtlk_7lm_2thick.plib
+-rw-rw-r--.  1 500 root   975492 Sep 10  2005 tsmc090nvtlk_8lm_1thick.pdb
+-rw-rw-r--.  1 500 root  3084010 Sep 10  2005 tsmc090nvtlk_8lm_1thick.plib
+-rw-rw-r--.  1 500 root   975496 Sep 10  2005 tsmc090nvtlk_8lm_2thick.pdb
+-rw-rw-r--.  1 500 root  3084010 Sep 10  2005 tsmc090nvtlk_8lm_2thick.plib
+-rw-rw-r--.  1 500 root   976910 Sep 10  2005 tsmc090nvtlk_9lm_2thick.pdb
+-rw-rw-r--.  1 500 root  3089720 Sep 10  2005 tsmc090nvtlk_9lm_2thick.plib
+-rw-rw-r--.  1 500 root  7621052 Sep 10  2005 typical.db
+-rw-rw-r--.  1 500 root  1220033 Sep 10  2005 typical_leakage.db
+-rw-rw-r--.  1 500 root  1762950 Sep 10  2005 typical_leakage.lib
+-rw-rw-r--.  1 500 root 16172268 Sep 10  2005 typical.lib
+[IC@IC Desktop]$ find /opt/Foundary_Library/TSMC90 -name "*mem*" -o -name "*ram*" -o -name "*rom*" 2>/dev/null | head -20
+
+/opt/Foundary_Library/TSMC90/license/README.tsmc90g_sram-dp-adv-v40_2005q4v1
+/opt/Foundary_Library/TSMC90/license/README.tsmc90g_rf-2p-adv-v40_2005q4v1_tetramax_v1
+/opt/Foundary_Library/TSMC90/license/README.tsmc90g_sram-dp-adv-v40_2005q4v1_tetramax_v1
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/sparc/libxinerama.so
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/zi/America/Paramaribo
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/linux/j2re1.4.2_04/lib/zi/America/Paramaribo
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tsmc090g_fram
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/doc/user_docs/ug_sram90nm_Adv.pdf
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/bin/sram_dp_adv
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_syngen
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_tmaxgen
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_dtgen
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_verilog_rtlgen
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_vergen
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_xpar
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_gds2.bif
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sparc/j2re1.4.2_04/lib/sparc/libxinerama.so
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sparc/j2re1.4.2_04/lib/zi/America/Paramaribo
+/opt/Foundary_Library/TSMC90/aci/sram_dp_adv/lib/sram_dp_adv_vhdl_rtlgen
+[IC@IC Desktop]$ 
+[IC@IC Desktop]$ # 3. 找 IO Pad 库
+[IC@IC Desktop]$ find /opt/Foundary_Library/TSMC90 -name "*io*" -o -name "*pad*" 2>/dev/null | head -20
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_TWS,Super_COMPstation_20.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_SUNW,SPARCstation-5.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_SUNW,SPARCstation-20.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_TWS,micro_COMPstation_5.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_SUNW,SPARCstation-LX+.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libaudio.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_SUNW,SPARCstation-10,SX.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_SUNW,SPARCstation-10.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_SUNW,SPARCstation-LX.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/sparc/libmon_SUNW,SPARCstation-4.so
+/opt/Foundary_Library/TSMC90/aci/fuse/lib/sparc/jre1.2.2/lib/audio
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/sparc/libioser12.so
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/sparc/libnio.so
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/audio
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/zi/Indian/Reunion
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/zi/America/Rio_Branco
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/zi/America/Maceio
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/sparc/j2re1.4.2_04/lib/zi/America/Asuncion
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/linux/j2re1.4.2_04/lib/i386/libioser12.so
+/opt/Foundary_Library/TSMC90/aci/rf_2p_adv/lib/linux/j2re1.4.2_04/lib/i386/libnio.so
+[IC@IC Desktop]$ 
+[IC@IC Desktop]$ # 4. 找 Milkyway 库 (ICC2 需要)
+[IC@IC Desktop]$ find /opt/Foundary_Library/TSMC90 -name "*.tf" -o -name "*.mw" -type d 2>/dev/null | head -20
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_5lm_2thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_5lm_1thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_7lm_2thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_6lm_1thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_9lm_2thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_4lm_2thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_7lm_1thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_8lm_1thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_4lm_1thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_6lm_2thick.tf
+/opt/Foundary_Library/TSMC90/aci/sc-x/astro/tf/tsmc090_8lm_2thick.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g3_130a/digital/Back_End/lef/tpdn90g3_130a/5lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g3_130a/digital/Back_End/lef/tpdn90g3_130a/8lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g3_130a/digital/Back_End/lef/tpdn90g3_130a/6lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g3_130a/digital/Back_End/lef/tpdn90g3_130a/7lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g3_130a/digital/Back_End/lef/tpdn90g3_130a/9lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g18_130a/digital/Back_End/lef/tpdn90g18_130a/5lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g18_130a/digital/Back_End/lef/tpdn90g18_130a/8lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g18_130a/digital/Back_End/lef/tpdn90g18_130a/6lm/techfiles/n90_Virtuoso4.4.tf
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g18_130a/digital/Back_End/lef/tpdn90g18_130a/7lm/techfiles/n90_Virtuoso4.4.tf
+[IC@IC Desktop]$ 
+[IC@IC Desktop]$ # 5. 看有没有 .synopsys_dc.setup
+[IC@IC Desktop]$ find /opt/Foundary_Library/TSMC90 -name ".synopsys*" -o -name "synopsys_dc*" 2>/dev/null
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g3_130a/digital/Front_End/timing_power/script/synopsys_dc.setup
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g18_130a/digital/Front_End/timing_power/script/synopsys_dc.setup
+/opt/Foundary_Library/TSMC90/fe_TSMCHOME_tpdn90g2_130a/digital/Front_End/timing_power/script/synopsys_dc.setup
+[IC@IC Desktop]$ 

@@ -1,24 +1,22 @@
 # ================================================================
 # Synopsys Design Compiler — Campus Smartcard SoC
-# ================================================================
+# Target: TSMC 90nm (tcbn90g)  slow corner  @13.56MHz
 # Usage: dc_shell -f dc_synthesis.tcl | tee dc_synthesis.log
 # ================================================================
 
 # ================================================================
-# 0. Library Setup (根据 VM 上的路径修改)
+# 0. Library Setup — TSMC 90nm
 # ================================================================
-# 示例 (TSMC 65nm):
-# set search_path [list . /opt/TSMC65/../synopsys /opt/TSMC65/../db]
-# set target_library   "tcbn65gpluswc.db"
-# set link_library     "* $target_library tcbn65gpluswc.db"
-# set synthetic_library "dw_foundation.sldb"
+set TSMC90    "/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys"
+set search_path [list . $TSMC90]
+set target_library   "slow.db"              ;# worst-case setup
+set link_library     "* slow.db"
+# Optional: read additional corners for MCMM
+# set link_library "* slow.db typical.db fast.db"
 
-# TODO: 替换为你 VM 上实际的库路径
-set LIB_PATH "/path/to/your/technology/lib"
-set search_path [list . $LIB_PATH]
-# set target_library "your_std_cell_ss.db"    ;# slow corner
-# set link_library   "* $target_library"
-# set symbol_library "your_std_cell.sdb"
+# Suppress warnings about unconnected ports (normal in hierarchical design)
+suppress_message "UID-401"
+suppress_message "LNK-041"
 
 # ================================================================
 # 1. Read RTL Design

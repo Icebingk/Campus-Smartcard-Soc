@@ -1,19 +1,26 @@
 # ================================================================
 # Synopsys IC Compiler II — Campus Smartcard SoC
-# ================================================================
+# Target: TSMC 90nm, 5LM 2thick
 # Usage: icc2_shell -f icc2_flow.tcl | tee icc2_flow.log
 # ================================================================
 
 # ================================================================
-# 0. Library Setup (根据 VM 上的路径修改)
+# 0. Library Setup — TSMC 90nm (5 metal layers, 2 thick metals)
 # ================================================================
-# TODO: 替换为实际路径
-set LIB_PATH "/path/to/your/technology/lib"
-set MW_REF_PATH "$LIB_PATH/milkyway"
+set TSMC90      "/opt/Foundary_Library/TSMC90/aci/sc-x"
+set TECH_FILE   "$TSMC90/astro/tf/tsmc090_5lm_2thick.tf"
+set MW_REF_LIB  "$TSMC90/mw_lib"     ;# 需要先用 Milkyway 生成
+set DB_PATH     "$TSMC90/synopsys"
 
-# set_app_var search_path [list . $LIB_PATH $MW_REF_PATH]
-# set_app_var target_library   "your_std_cell_ss.db"
-# set_app_var link_library     "* $target_library"
+set_app_var search_path      [list . $DB_PATH $MW_REF_LIB]
+set_app_var target_library   "slow.db"
+set_app_var link_library     "* slow.db"
+set_app_var mw_reference_library ""
+
+# Note: ICC2 需要 Milkyway 格式的参考库
+# 如果 MW 库不存在，先用以下命令生成:
+#   set mw_logic0_net $MW_REF_LIB
+#   create_mw_lib -technology $TECH_FILE -mw_reference_library $MW_REF_LIB soc_top.mw
 
 # ================================================================
 # 1. Create Library & Read Netlist
