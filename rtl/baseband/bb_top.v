@@ -332,7 +332,6 @@ module bb_top (
         rf_rx_d1 <= rf_rx;
         rf_rx_d2 <= rf_rx_d1;
     end
-    assign rx_edge = rf_rx_d1 ^ rf_rx_d2;  // 检测电平变化
 
     always @(posedge pclk or negedge presetn)
         if (!presetn) rx_state <= RX_IDLE; else rx_state <= rx_next;
