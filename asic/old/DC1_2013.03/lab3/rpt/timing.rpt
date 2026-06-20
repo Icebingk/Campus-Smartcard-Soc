@@ -1,0 +1,49 @@
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : MY_DESIGN_1
+Version: K-2015.06
+Date   : Thu Dec 11 20:26:18 2025
+****************************************
+
+Operating Conditions: typical   Library: gscl45nm
+Wire Load Model Mode: top
+
+  Startpoint: Cin1[0] (input port)
+  Endpoint: Cout[4] (output port)
+  Path Group: (none)
+  Path Type: max
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  input external delay                     0.00       0.00 r
+  Cin1[0] (in)                             0.00       0.00 r
+  U_COMBO/Cin1[0] (COMBO)                  0.00       0.00 r
+  U_COMBO/U2_ARITH/a[0] (ARITH_1)          0.00       0.00 r
+  U_COMBO/U2_ARITH/U24/Y (AND2X1)          0.06       0.06 r
+  U_COMBO/U2_ARITH/U32/Y (OR2X1)           0.04       0.10 r
+  U_COMBO/U2_ARITH/U33/Y (AOI22X1)         0.02       0.12 f
+  U_COMBO/U2_ARITH/U14/Y (BUFX2)           0.04       0.16 f
+  U_COMBO/U2_ARITH/U40/Y (OR2X1)           0.05       0.21 f
+  U_COMBO/U2_ARITH/U41/Y (AOI22X1)         0.03       0.24 r
+  U_COMBO/U2_ARITH/U21/Y (BUFX2)           0.04       0.28 r
+  U_COMBO/U2_ARITH/U1/Y (OR2X1)            0.04       0.33 r
+  U_COMBO/U2_ARITH/U48/Y (AOI22X1)         0.02       0.34 f
+  U_COMBO/U2_ARITH/U2/Y (BUFX2)            0.04       0.38 f
+  U_COMBO/U2_ARITH/U49/Y (AOI22X1)         0.03       0.41 r
+  U_COMBO/U2_ARITH/U13/Y (BUFX2)           0.05       0.46 r
+  U_COMBO/U2_ARITH/U50/YS (FAX1)           0.10       0.56 r
+  U_COMBO/U2_ARITH/out1[4] (ARITH_1)       0.00       0.56 r
+  U_COMBO/U8/YS (FAX1)                     0.08       0.64 f
+  U_COMBO/Cout[4] (COMBO)                  0.00       0.64 f
+  Cout[4] (out)                            0.00       0.64 f
+  data arrival time                                   0.64
+  -----------------------------------------------------------
+  (Path is unconstrained)
+
+
+1

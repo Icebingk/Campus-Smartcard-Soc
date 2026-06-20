@@ -1,0 +1,33 @@
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : STOTO
+Version: K-2015.06
+Date   : Thu Dec 18 19:39:43 2025
+****************************************
+
+
+   max_delay/setup ('INPUTS' group)
+
+                             Required        Actual
+   Endpoint                 Path Delay     Path Delay        Slack
+   -----------------------------------------------------------------
+   I_IN/R_44/D                  1.79           1.91 r        -0.12  (VIOLATED)
+   I_IN/R_41/D                  1.79           1.91 r        -0.12  (VIOLATED)
+   I_IN/R_25/D                  1.79           1.91 r        -0.12  (VIOLATED)
+   I_IN/R_45/D                  1.79           1.91 r        -0.12  (VIOLATED)
+   I_IN/R_21/D                  1.80           1.91 r        -0.12  (VIOLATED)
+
+
+   max_leakage_power
+
+                             Required        Actual
+   Design                   Leakage Power  Leakage Power     Slack
+   -----------------------------------------------------------------
+   STOTO                        0.00       8176567.50     -8176567.50
+                                                                    (VIOLATED)
+
+
+1

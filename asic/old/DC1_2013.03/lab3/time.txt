@@ -1,0 +1,52 @@
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : MY_DESIGN
+Version: K-2015.06
+Date   : Fri Nov  7 18:12:00 2025
+****************************************
+
+Operating Conditions: typical   Library: gscl45nm
+Wire Load Model Mode: top
+
+  Startpoint: Cin2[0] (input port clocked by ideal_clk)
+  Endpoint: Cout[4] (output port clocked by ideal_clk)
+  Path Group: ideal_clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock ideal_clk (rise edge)                             0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  input external delay                                   20.00      20.00 r
+  Cin2[0] (in)                                            0.00      20.00 r
+  U144/Y (INVX1)                                          0.02      20.02 f
+  U154/Y (OR2X1)                                          0.06      20.08 f
+  U_COMBO/U2_ARITH/sub_45/U2_1/YS (FAX1)                  0.08      20.16 f
+  U175/Y (AOI22X1)                                        0.04      20.19 r
+  U132/Y (BUFX2)                                          0.03      20.23 r
+  U176/Y (INVX1)                                          0.03      20.26 f
+  U_COMBO/add_68/U1_1/YC (FAX1)                           0.09      20.35 f
+  U_COMBO/add_68/U1_2/YC (FAX1)                           0.08      20.43 f
+  U_COMBO/add_68/U1_3/YC (FAX1)                           0.08      20.51 f
+  U_COMBO/add_68/U1_4/YS (FAX1)                           0.07      20.59 f
+  Cout[4] (out)                                           0.00      20.59 f
+  data arrival time                                                 20.59
+
+  clock ideal_clk (rise edge)                            50.00      50.00
+  clock network delay (ideal)                             0.00      50.00
+  clock uncertainty                                      -0.20      49.80
+  output external delay                                 -20.00      29.80
+  data required time                                                29.80
+  --------------------------------------------------------------------------
+  data required time                                                29.80
+  data arrival time                                                -20.59
+  --------------------------------------------------------------------------
+  slack (MET)                                                        9.21
+
+
+1

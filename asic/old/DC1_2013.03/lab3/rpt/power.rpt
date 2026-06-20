@@ -1,0 +1,50 @@
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : MY_DESIGN_1
+Version: K-2015.06
+Date   : Thu Dec 11 20:26:18 2025
+****************************************
+
+
+Library(s) Used:
+
+    gscl45nm (File: /home/IC/Desktop/DC1_2013.03/ref/libs/mw_lib/sc/LM/gscl45nm.db)
+
+
+Operating Conditions: typical   Library: gscl45nm
+Wire Load Model Mode: top
+
+
+Global Operating Voltage = 1.1  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1nW
+
+
+  Cell Internal Power  = 145.0200 uW   (71%)
+  Net Switching Power  =  58.9399 uW   (29%)
+                         ---------
+Total Dynamic Power    = 203.9600 uW  (100%)
+
+Cell Leakage Power     =   3.4357 uW
+
+Information: report_power power group summary does not include estimated clock tree power. (PWR-789)
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register           0.0000            0.0000            0.0000            0.0000  (   0.00%)
+sequential     4.0686e-02        2.8855e-03        1.0995e+03        4.4671e-02  (  21.54%)
+combinational      0.1043        5.6054e-02        2.3361e+03            0.1627  (  78.46%)
+--------------------------------------------------------------------------------------------------
+Total              0.1450 mW     5.8940e-02 mW     3.4357e+03 nW         0.2074 mW
+1

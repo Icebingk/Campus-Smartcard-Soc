@@ -1,0 +1,58 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : TOP
+Version: K-2015.06
+Date   : Thu Nov  6 15:57:17 2025
+****************************************
+
+Operating Conditions: cb13fs120_tsmc_max   Library: cb13fs120_tsmc_max
+Wire Load Model Mode: enclosed
+
+  Startpoint: Neg_Flag (input port clocked by Clk)
+  Endpoint: I_COUNT/PCint_reg[0]
+            (rising edge-triggered flip-flop clocked by Clk)
+  Path Group: Clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  TOP                8000                  cb13fs120_tsmc_max
+  DECODE             ForQA                 cb13fs120_tsmc_max
+  COUNT              ForQA                 cb13fs120_tsmc_max
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock Clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     1.20       1.20 r
+  Neg_Flag (in)                            0.06       1.26 r
+  I_DECODE/Neg_Flag (DECODE)               0.00       1.26 r
+  I_DECODE/U13/ZN (nr02d0)                 0.09       1.35 f
+  I_DECODE/U48/ZN (nr03d0)                 0.20       1.55 r
+  I_DECODE/Incrmnt_PC (DECODE)             0.00       1.55 r
+  I_COUNT/Incrmnt_PC (COUNT)               0.00       1.55 r
+  I_COUNT/U65/ZN (nr13d2)                  0.25       1.80 f
+  I_COUNT/U71/Z (aor22d1)                  0.20       2.00 f
+  I_COUNT/U50/ZN (inv0d1)                  0.04       2.04 r
+  I_COUNT/U16/ZN (nd02d1)                  0.05       2.10 f
+  I_COUNT/PCint_reg[0]/D (dfnrq4)          0.00       2.10 f
+  data arrival time                                   2.10
+
+  clock Clk (rise edge)                    2.00       2.00
+  clock network delay (ideal)              0.00       2.00
+  clock uncertainty                       -0.20       1.80
+  I_COUNT/PCint_reg[0]/CP (dfnrq4)         0.00       1.80 r
+  library setup time                      -0.08       1.72
+  data required time                                  1.72
+  -----------------------------------------------------------
+  data required time                                  1.72
+  data arrival time                                  -2.10
+  -----------------------------------------------------------
+  slack (VIOLATED)                                   -0.38
+
+
+1

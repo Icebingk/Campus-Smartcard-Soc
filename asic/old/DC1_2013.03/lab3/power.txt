@@ -1,0 +1,49 @@
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : MY_DESIGN
+Version: K-2015.06
+Date   : Fri Nov  7 18:12:04 2025
+****************************************
+
+
+Library(s) Used:
+
+    gscl45nm (File: /home/IC/Desktop/DC1_2013.03/ref/libs/mw_lib/sc/LM/gscl45nm.db)
+
+
+Operating Conditions: typical   Library: gscl45nm
+Wire Load Model Mode: top
+
+
+Global Operating Voltage = 1.1  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1nW
+
+
+  Cell Internal Power  =  11.2330 uW   (84%)
+  Net Switching Power  =   2.0900 uW   (16%)
+                         ---------
+Total Dynamic Power    =  13.3230 uW  (100%)
+
+Cell Leakage Power     =   2.8334 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
+clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
+register       8.1256e-03        5.9542e-04        1.0446e+03        9.7656e-03  (  60.44%)
+sequential         0.0000            0.0000            0.0000            0.0000  (   0.00%)
+combinational  3.1074e-03        1.4945e-03        1.7888e+03        6.3908e-03  (  39.56%)
+--------------------------------------------------------------------------------------------------
+Total          1.1233e-02 mW     2.0900e-03 mW     2.8334e+03 nW     1.6156e-02 mW
+1

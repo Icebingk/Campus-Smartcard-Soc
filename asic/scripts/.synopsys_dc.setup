@@ -1,16 +1,21 @@
-# ================================================================
-# .synopsys_dc.setup — Campus Smartcard SoC (TSMC 90nm)
-# DC 启动时自动加载
-# ================================================================
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# .synopsys_dc.setup — Campus Smartcard SoC
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-set TSMC90    "/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys"
-set search_path [list . $TSMC90]
-set target_library   "slow.db"
-set link_library     "* slow.db"
+history keep 200
 
-# Physical library (for power/area estimation)
-set physical_library "tsmc090nvtlk_5lm_2thick.pdb"
-set mw_reference_library ""
+alias h history
+alias rc "report_constraint -all_violators"
+alias rt report_timing
+alias ra report_area
+alias rq report_qor
+alias fr "remove_design -designs"
 
-# Enable DesignWare components
-set synthetic_library [list "dw_foundation.sldb" "standard.sldb"]
+set TSMC90 "/opt/Foundary_Library/TSMC90/aci/sc-x/synopsys"
+set_app_var search_path    [list . $TSMC90 ../../rtl]
+set_app_var target_library "slow.db"
+set_app_var link_library   "* slow.db"
+set_app_var symbol_library "slow.db"
+
+define_design_lib WORK -path ./work
+suppress_message "LINT-99 CMD-041 UID-401"

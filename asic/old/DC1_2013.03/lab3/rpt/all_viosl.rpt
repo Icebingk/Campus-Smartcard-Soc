@@ -1,0 +1,39 @@
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : MY_DESIGN_1
+Version: K-2015.06
+Date   : Thu Dec 11 20:26:19 2025
+****************************************
+
+
+   max_capacitance
+
+                             Required        Actual
+   Net                      Capacitance    Capacitance       Slack
+   -----------------------------------------------------------------
+   N10                          0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n19                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n26                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n31                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n35                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n38                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n41                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n43                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U1_ARITH/n45                 0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n19         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n26         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n31         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n35         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n38         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n41         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n43         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   U_COMBO/U2_ARITH/n45         0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   n39                          0.00           0.00           0.00  (VIOLATED: increase significant digits)
+   n42                          0.00           0.00           0.00  (VIOLATED: increase significant digits)
+
+   -----------------------------------------------------------------
+   Total                      19                 -0.03  
+
+1

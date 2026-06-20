@@ -1,0 +1,42 @@
+# Clock freq: 100 MHz = 10ns
+set Tclk 50
+set clk_port "clk"
+set rst_net "rst_n"
+#set rst_net "u_crg/core_rst_n"
+set inout_port ""
+
+create_clock -name ideal_clk -period $Tclk [get_ports $clk_port]
+set_clock_uncertainty   -setup 0.2  [get_clocks {ideal_clk}]
+set_clock_uncertainty   -hold 0.2 [get_clocks {ideal_clk}]
+set_clock_transition    -rise -max 0.1 [get_clocks {ideal_clk}]
+set_clock_transition    -fall -max 0.1 [get_clocks {ideal_clk}]
+# ideal networks
+# do not optimize clk network
+#set_ideal_network [get_ports $clk_port]
+#set_dont_touch_network [get_ports $clk_port]
+# 在时钟约束部分添加：
+set_clock_latency -source [expr $Tclk * 0.05] [get_clocks ideal_clk]    ;# 源端延迟，约5%周期
+set_clock_latency [expr $Tclk * 0.1] [get_clocks ideal_clk]             ;# 网络延迟，约10%周期
+# Input delay and output delay
+#set_input_delay 0.1 -clock ideal_clk [remove_from_collection [all_inputs] [get_ports $clk_port]]
+#set_output_delay 0.1 -clock ideal_clk [all_outputs]
+
+set_input_delay -max [expr $Tclk*0.4] -clock ideal_clk [remove_from_collection [all_inputs] [get_ports $clk_port]]
+set_output_delay -max [expr $Tclk*0.4] -clock ideal_clk [all_outputs]
+# =============================================================================
+# Enviornement attribute constraint
+# =============================================================================
+set_max_transition 0.6 [all_outputs]
+#set_max_transition 0.6 [current_design]
+set_max_transition 0.5 [current_design]
+
+# Load on the output ports
+#set_load 1 [all_outputs]
+set_port_fanout_number 10 [all_outputs]
+set_max_fanout 20 [current_design]
+
+# Input transition time on inputs
+#set ALLINSBUTCLK [remove_from_collection [remove_from_collection [all_inputs] [get_ports $clk_port]] [get_ports $inout_port]]
+#set_driving_cell -lib_cell clk2d2 [get_ports $clk_port]
+#set_driving_cell -lib_cell clk2d2 $ALLINSBUTCLK
+set_max_transition 0.6 [all_inputs]

@@ -1,0 +1,18 @@
+[IC@IC Desktop]$ # 1. 在自己目录下创建 key 文件
+[IC@IC Desktop]$ mkdir -p ~/synplify_license
+[IC@IC Desktop]$ cp /opt/Synopsys/License/License.dat ~/synplify_license/key
+[IC@IC Desktop]$ 
+[IC@IC Desktop]$ # 2. 看 site_info 里写了什么
+[IC@IC Desktop]$ cat /opt/Synopsys/Synplify2015/admin/license/site_info
+SiteId      :000
+LicenseAdmin:
+PhoneOrEmail:Top@(none)
+[IC@IC Desktop]$ 
+[IC@IC Desktop]$ # 3. 用 SCL 的环境变量绕过 key 文件
+[IC@IC Desktop]$ export SNPSLMD_LICENSE_FILE=27000@IC
+[IC@IC Desktop]$ export SYNOPSYS_LICENSE_FILE=/opt/Synopsys/License/License.dat
+[IC@IC Desktop]$ 
+[IC@IC Desktop]$ # 4. 试 ICC2016 的 dc_shell (可能有完整 DC 功能)
+[IC@IC Desktop]$ ls /opt/Synopsys/ICC2016/bin/ | grep -i "shell\|compile" | head -10
+icc_shell
+snps_shell

@@ -1,0 +1,11 @@
+###################################################################
+
+# Created by write_script -format dctcl on Thu Dec 11 20:23:28 2025
+
+###################################################################
+
+# Set the current_design #
+current_design MY_DESIGN_1
+
+set_units -time ns -resistance kOhm -capacitance pF -voltage V -current uA
+remove_wire_load_model

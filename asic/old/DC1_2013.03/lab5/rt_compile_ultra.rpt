@@ -1,0 +1,153 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : STOTO
+Version: K-2015.06
+Date   : Thu Dec 18 19:39:59 2025
+****************************************
+
+ * Some/all delay information is back-annotated.
+
+Operating Conditions: cb13fs120_tsmc_max   Library: cb13fs120_tsmc_max
+Wire Load Model Mode: Inactive.
+
+  Startpoint: I_IN/R_45 (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: I_MIDDLE/I_PIPELINE/clk_r_REG31_S1
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  I_IN/R_45/CP (sdnrb2)                                   0.00       0.00 r
+  I_IN/R_45/Q (sdnrb2)                                    0.39       0.39 r
+  I_IN/U40/ZN (inv0d1)                                    0.05 *     0.44 f
+  I_IN/U41/ZN (nd02d1)                                    0.04 *     0.48 r
+  I_IN/U43/ZN (nd02d1)                                    0.08 *     0.56 f
+  I_IN/U45/ZN (nd02d2)                                    0.07 *     0.63 r
+  I_IN/a[0] (INPUT)                                       0.00       0.63 r
+  I_MIDDLE/I_PIPELINE/a[0] (PIPELINE)                     0.00       0.63 r
+  I_MIDDLE/I_PIPELINE/U155/ZN (inv0d0)                    0.07 *     0.70 f
+  I_MIDDLE/I_PIPELINE/U157/ZN (nr03d0)                    0.08 *     0.79 r
+  I_MIDDLE/I_PIPELINE/U160/ZN (nr03d0)                    0.11 *     0.90 f
+  I_MIDDLE/I_PIPELINE/U161/ZN (xn02d1)                    0.27 *     1.17 f
+  I_MIDDLE/I_PIPELINE/intadd_1/U4/CO (ad01d1)             0.27 *     1.44 f
+  I_MIDDLE/I_PIPELINE/intadd_1/U3/S (ad01d0)              0.33 *     1.76 r
+  I_MIDDLE/I_PIPELINE/clk_r_REG31_S1/D (sdnrq1)           0.00 *     1.76 r
+  data arrival time                                                  1.76
+
+  clock clk (rise edge)                                   2.10       2.10
+  clock network delay (ideal)                             0.00       2.10
+  clock uncertainty                                      -0.10       2.00
+  I_MIDDLE/I_PIPELINE/clk_r_REG31_S1/CP (sdnrq1)          0.00       2.00 r
+  library setup time                                     -0.21       1.79
+  data required time                                                 1.79
+  --------------------------------------------------------------------------
+  data required time                                                 1.79
+  data arrival time                                                 -1.76
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.03
+
+
+  Startpoint: sel2[0] (input port clocked by clk)
+  Endpoint: z[7] (output port clocked by clk)
+  Path Group: COMBO
+  Path Type: max
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     1.00       1.00 f
+  sel2[0] (in)                             0.17       1.17 f
+  U295/Z (mx02d0)                          0.21 *     1.39 f
+  U298/ZN (nd02d1)                         0.05 *     1.44 r
+  U301/ZN (nd02d1)                         0.08 *     1.52 f
+  U302/ZN (invbd2)                         0.10 *     1.62 r
+  U303/ZN (invbdf)                         0.18 *     1.80 f
+  z[7] (out)                               0.00 *     1.80 f
+  data arrival time                                   1.80
+
+  clock clk (rise edge)                    2.10       2.10
+  clock network delay (ideal)              0.00       2.10
+  clock uncertainty                       -0.10       2.00
+  output external delay                   -0.20       1.80
+  data required time                                  1.80
+  -----------------------------------------------------------
+  data required time                                  1.80
+  data arrival time                                  -1.80
+  -----------------------------------------------------------
+  slack (MET)                                         0.00
+
+
+  Startpoint: a1[1] (input port clocked by clk)
+  Endpoint: I_IN/R_44 (rising edge-triggered flip-flop clocked by clk)
+  Path Group: INPUTS
+  Path Type: max
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     1.90       1.90 r
+  a1[1] (in)                               0.01       1.91 r
+  I_IN/a1[1] (INPUT)                       0.00       1.91 r
+  I_IN/R_44/D (sdnrb1)                     0.00 *     1.91 r
+  data arrival time                                   1.91
+
+  clock clk (rise edge)                    2.10       2.10
+  clock network delay (ideal)              0.00       2.10
+  clock uncertainty                       -0.10       2.00
+  I_IN/R_44/CP (sdnrb1)                    0.00       2.00 r
+  library setup time                      -0.21       1.79
+  data required time                                  1.79
+  -----------------------------------------------------------
+  data required time                                  1.79
+  data arrival time                                  -1.91
+  -----------------------------------------------------------
+  slack (VIOLATED)                                   -0.12
+
+
+  Startpoint: I_MIDDLE/I_DONT_PIPELINE/I_RANDOM/int2_reg[5]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: z[5] (output port clocked by clk)
+  Path Group: OUTPUTS
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  I_MIDDLE/I_DONT_PIPELINE/I_RANDOM/int2_reg[5]/CP (sdnrq1)
+                                                          0.00       0.00 r
+  I_MIDDLE/I_DONT_PIPELINE/I_RANDOM/int2_reg[5]/Q (sdnrq1)
+                                                          0.28       0.28 f
+  U387/ZN (nd12d0)                                        0.15 *     0.44 f
+  U388/Z (an02d1)                                         0.16 *     0.59 f
+  U391/ZN (nd12d0)                                        0.17 *     0.76 f
+  U393/ZN (inv0d0)                                        0.11 *     0.87 r
+  U394/ZN (nd02d1)                                        0.09 *     0.96 f
+  U395/ZN (nd02d2)                                        0.06 *     1.03 r
+  U396/ZN (invbd2)                                        0.11 *     1.14 f
+  U397/ZN (invbdf)                                        0.15 *     1.28 r
+  z[5] (out)                                              0.00 *     1.28 r
+  data arrival time                                                  1.28
+
+  clock clk (rise edge)                                   2.10       2.10
+  clock network delay (ideal)                             0.00       2.10
+  clock uncertainty                                      -0.10       2.00
+  output external delay                                  -0.20       1.80
+  data required time                                                 1.80
+  --------------------------------------------------------------------------
+  data required time                                                 1.80
+  data arrival time                                                 -1.28
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.52
+
+
+1

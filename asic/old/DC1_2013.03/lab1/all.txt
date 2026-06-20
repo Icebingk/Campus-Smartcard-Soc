@@ -1,0 +1,26 @@
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : TOP
+Version: K-2015.06
+Date   : Thu Nov  6 16:00:34 2025
+****************************************
+
+
+   max_delay/setup ('Clk' group)
+
+                             Required        Actual
+   Endpoint                 Path Delay     Path Delay        Slack
+   -----------------------------------------------------------------
+   I_COUNT/PCint_reg[0]/D       1.72           2.10 f        -0.38  (VIOLATED)
+   I_COUNT/PCint_reg[1]/D       1.71           2.08 f        -0.37  (VIOLATED)
+   I_COUNT/PCint_reg[2]/D       1.71           2.08 f        -0.37  (VIOLATED)
+   I_COUNT/PCint_reg[3]/D       1.71           2.08 f        -0.37  (VIOLATED)
+   I_COUNT/PCint_reg[5]/D       1.71           2.08 f        -0.37  (VIOLATED)
+   I_COUNT/PCint_reg[6]/D       1.71           2.08 f        -0.37  (VIOLATED)
+   I_COUNT/PCint_reg[7]/D       1.71           2.08 f        -0.37  (VIOLATED)
+   I_COUNT/PCint_reg[4]/D       1.71           2.08 f        -0.36  (VIOLATED)
+
+
+1
