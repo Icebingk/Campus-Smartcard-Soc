@@ -24,7 +24,3 @@ set_output_delay -clock clk_sys -min 0.0 [get_ports {rf_tx scan_out}]
 
 # --- Async Reset False Path ---
 set_false_path -from [get_ports rst_n]
-
-# --- Force distributed RAM for S-Box ROMs (avoid RAMB18 async DRC) ---
-set_property rom_style distributed [get_cells -hier -filter {REF_NAME =~ *sbox* || REF_NAME =~ *inv_sbox*}]
-set_property ram_style distributed [get_cells -hier -filter {NAME =~ *regfile_reg*}]
